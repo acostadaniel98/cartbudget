@@ -17,7 +17,7 @@ const ASSETS_TO_CACHE = [
 // Instalar Service Worker
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[ServiceWorker] Caching core assets');
@@ -35,7 +35,7 @@ self.addEventListener('install', (event) => {
 // Activar Service Worker
 self.addEventListener('activate', (event) => {
   console.log('[ServiceWorker] Activating...');
-  
+
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(

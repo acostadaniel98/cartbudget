@@ -12,4 +12,4 @@ export { AddProductForm } from './AddProductForm';
 export { ProductList } from './ProductList';
 export { ProductItem } from './ProductItem';
 export { BudgetCard } from './BudgetCard';
-export { TotalCard } from './TotalCard';export { ServiceWorkerClient } from './ServiceWorkerClient';
+export { TotalCard } from './TotalCard'; export { ServiceWorkerClient } from './ServiceWorkerClient';
