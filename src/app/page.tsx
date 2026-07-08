@@ -1,77 +1,80 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
+import Link from "next/link";
+import { Plus, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/shared/empty-state";
+import { BudgetSummary } from "@/features/shopping-items/components/budget-summary";
+import { ShoppingListCard } from "@/features/shopping-lists/components/shopping-list-card";
 import {
-  AddProductForm,
-  BudgetCard,
-  ProductList,
-  TotalCard,
-  ServiceWorkerClient,
-} from '@/presentation/components';
-import { useCartBudgetStore } from '@/presentation/store/useCartBudgetStore';
+  useActiveShoppingList,
+  useRecentShoppingLists,
+} from "@/features/shopping-lists/hooks/use-shopping-lists";
+import { useListSummary } from "@/features/shopping-items/hooks/use-list-summary";
+import { ROUTES } from "@/constants/routes";
+import { SITE_CONFIG } from "@/config/site";
 
-export default function Home() {
-  const { products, total, isExceeded, isNearLimit, initializeStore } =
-    useCartBudgetStore();
+function ActiveListSummary({ listId, presupuesto }: { listId: string; presupuesto: number | undefined }) {
+  const { summary } = useListSummary(listId, presupuesto);
+  return <BudgetSummary summary={summary} />;
+}
 
-  // Initialize store on mount
-  useEffect(() => {
-    initializeStore();
-  }, [initializeStore]);
+export default function DashboardPage() {
+  const { activeList, isLoading: isLoadingActive } = useActiveShoppingList();
+  const { lists: recent, isLoading: isLoadingRecent } = useRecentShoppingLists(6);
+
+  const otherRecent = recent.filter((l) => l.id !== activeList?.id);
 
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <ServiceWorkerClient />
-
-      {/* Header */}
-      <header className="sticky top-0 bg-white border-b border-gray-200 z-10">
-        <div className="max-w-lg mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">
-            <span className="text-green-600">Cart</span>Budget
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Calculadora de compras inteligente
+    <div className="space-y-6 px-4 pb-6">
+      <header className="flex items-center justify-between pt-2">
+        <div>
+          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            {SITE_CONFIG.nombre}
           </p>
+          <h1 className="font-[family-name:var(--font-display)] text-2xl font-extrabold">
+            ¿Qué vamos a comprar?
+          </h1>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col max-w-lg mx-auto w-full px-4 py-6 pb-40 space-y-6">
-        {/* Budget Section */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">
-            Tu presupuesto
-          </h2>
-          <BudgetCard />
-        </section>
+      <Button asChild size="lg" className="w-full">
+        <Link href={ROUTES.nuevaCompra}>
+          <Plus /> Nueva compra
+        </Link>
+      </Button>
 
-        {/* Add Product Form */}
-        <section>
-          <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">
-            Agregar producto
-          </h2>
-          <AddProductForm />
+      {!isLoadingActive && activeList && (
+        <section className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h2 className="font-[family-name:var(--font-display)] font-bold">Compra activa</h2>
+            <Link href={ROUTES.compra(activeList.id)} className="text-sm font-semibold text-primary">
+              Continuar →
+            </Link>
+          </div>
+          <Link href={ROUTES.compra(activeList.id)} className="block">
+            <ActiveListSummary listId={activeList.id} presupuesto={activeList.presupuesto} />
+          </Link>
         </section>
+      )}
 
-        {/* Products List */}
-        <section className="flex-1">
-          <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-3">
-            Tu carrito ({products.length})
-          </h2>
-          <ProductList products={products} />
-        </section>
-      </main>
+      <section className="space-y-2">
+        <h2 className="font-[family-name:var(--font-display)] font-bold">Compras recientes</h2>
 
-      {/* Sticky Total Card */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <TotalCard
-            total={total}
-            isExceeded={isExceeded}
-            isNearLimit={isNearLimit}
+        {!isLoadingRecent && otherRecent.length === 0 && !activeList && (
+          <EmptyState
+            icon={<ShoppingCart />}
+            title="Todavía no tienes compras"
+            description="Crea tu primera lista para empezar a ahorrar tiempo en el súper."
           />
+        )}
+
+        <div className="space-y-2">
+          {otherRecent.map((list) => (
+            <ShoppingListCard key={list.id} list={list} />
+          ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -1,21 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
-
-const geist = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import { ServiceWorkerRegister } from "@/components/shared/service-worker-register";
+import { DatabaseBootstrap } from "@/components/shared/database-bootstrap";
+import { OfflineBanner } from "@/components/shared/offline-banner";
+import { BottomNav } from "@/components/shared/bottom-nav";
+import { Toaster } from "@/components/ui/sonner";
+import { SITE_CONFIG } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "CartBudget",
-  description: "Calculadora de compras en tiempo real - Controla tu presupuesto al comprar",
-  keywords: ["carrito", "presupuesto", "compras", "calculadora"],
-  manifest: "/manifest.json",
+  title: {
+    default: `${SITE_CONFIG.nombre} — Tu compra, bajo control`,
+    template: `%s · ${SITE_CONFIG.nombre}`,
+  },
+  description: SITE_CONFIG.descripcion,
+  applicationName: SITE_CONFIG.nombre,
+  icons: {
+    icon: [
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "CartBudget",
+    statusBarStyle: "default",
+    title: SITE_CONFIG.nombre,
   },
   formatDetection: {
     telephone: false,
@@ -27,28 +37,24 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#3b82f6",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf9f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#121513" },
+  ],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="es"
-      className={`${geist.variable} h-full antialiased`}
-    >
-      <head>
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="CartBudget" />
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%233b82f6' width='180' height='180'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>$</text></svg>" />
-      </head>
-      <body className="min-h-full flex flex-col bg-gray-50">
-        {children}
+    <html lang="es-SV" suppressHydrationWarning>
+      <body className="min-h-dvh antialiased">
+        <ThemeProvider>
+          <ServiceWorkerRegister />
+          <DatabaseBootstrap />
+          <OfflineBanner />
+          <div className="mx-auto min-h-dvh max-w-md pb-20">{children}</div>
+          <BottomNav />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

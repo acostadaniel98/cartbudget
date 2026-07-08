@@ -1,112 +1,212 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
 
-/* Design Tokens */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  /* Colors */
-  --color-primary: #10b981;
-  --color-primary-dark: #059669;
-  --color-primary-light: #d1fae5;
+  --background: #faf9f5;
+  --foreground: #1b1f1c;
+  --card: #ffffff;
+  --card-foreground: #1b1f1c;
+  --popover: #ffffff;
+  --popover-foreground: #1b1f1c;
 
-  --color-warning: #f59e0b;
-  --color-warning-dark: #d97706;
-  --color-warning-light: #fef3c7;
+  --primary: #2f6b4f;
+  --primary-foreground: #f6faf7;
 
-  --color-danger: #ef4444;
-  --color-danger-dark: #dc2626;
-  --color-danger-light: #fee2e2;
+  --secondary: #eef1ea;
+  --secondary-foreground: #24291f;
 
-  --color-neutral: #f3f4f6;
+  --accent: #e8a33d;
+  --accent-foreground: #2b1c02;
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  --muted: #f0eee6;
+  --muted-foreground: #6b6a5e;
 
-  /* Font Sizes */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-md: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 2rem;
+  --destructive: #c1443a;
+  --destructive-foreground: #fdf3f2;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --border: #e5e2d6;
+  --input: #e5e2d6;
+  --ring: #2f6b4f;
+
+  --success: #2f6b4f;
+  --warning: #e8a33d;
+
+  --radius: 1rem;
+
+  --font-display: "Manrope", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+.dark {
+  --background: #121513;
+  --foreground: #f2f1ea;
+  --card: #191d1a;
+  --card-foreground: #f2f1ea;
+  --popover: #191d1a;
+  --popover-foreground: #f2f1ea;
+
+  --primary: #5cab7d;
+  --primary-foreground: #0d1510;
+
+  --secondary: #20241f;
+  --secondary-foreground: #e8e6dc;
+
+  --accent: #f0b54b;
+  --accent-foreground: #2b1c02;
+
+  --muted: #1d211e;
+  --muted-foreground: #9a9a8c;
+
+  --destructive: #e0685d;
+  --destructive-foreground: #290b08;
+
+  --border: #272b26;
+  --input: #272b26;
+  --ring: #5cab7d;
+
+  --success: #5cab7d;
+  --warning: #f0b54b;
 }
 
 @theme inline {
-  --color-primary: var(--color-primary);
-  --font-sans: var(--font-geist-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --animate-tap-pop: tap-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Global Styles */
-* {
-  -webkit-tap-highlight-color: transparent;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground font-[family-name:var(--font-body)] antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-[family-name:var(--font-display)];
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer utilities {
+  .receipt-edge {
+    clip-path: polygon(
+      0% 0%,
+      100% 0%,
+      100% 96%,
+      97% 100%,
+      94% 96%,
+      91% 100%,
+      88% 96%,
+      85% 100%,
+      82% 96%,
+      79% 100%,
+      76% 96%,
+      73% 100%,
+      70% 96%,
+      67% 100%,
+      64% 96%,
+      61% 100%,
+      58% 96%,
+      55% 100%,
+      52% 96%,
+      49% 100%,
+      46% 96%,
+      43% 100%,
+      40% 96%,
+      37% 100%,
+      34% 96%,
+      31% 100%,
+      28% 96%,
+      25% 100%,
+      22% 96%,
+      19% 100%,
+      16% 96%,
+      13% 100%,
+      10% 96%,
+      7% 100%,
+      4% 96%,
+      1% 100%,
+      0% 96%
+    );
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 }
 
-body {
-  background-color: #f9fafb;
-  color: #111827;
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Input styling */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Focus visible */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* Animation utility */
-@keyframes pulse {
-
-  0%,
+@keyframes tap-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
   100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
+    transform: scale(1);
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
 }
