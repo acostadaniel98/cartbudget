@@ -16,7 +16,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
         {icon}
       </div>
       <div className="space-y-1">
-        <p className="font-[family-name:var(--font-display)] font-bold">{title}</p>
+        <p className="font-display font-bold">{title}</p>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
       {action}

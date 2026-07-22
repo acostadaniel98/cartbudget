@@ -36,9 +36,7 @@ export function PageHeader({ title, subtitle, showBack = false, action, classNam
         </Button>
       )}
       <div className="min-w-0 flex-1">
-        <h1 className="truncate font-[family-name:var(--font-display)] text-lg font-bold leading-tight">
-          {title}
-        </h1>
+        <h1 className="truncate font-display text-lg font-bold leading-tight">{title}</h1>
         {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}

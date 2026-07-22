@@ -25,7 +25,7 @@ export function ShoppingListCard({ list }: ShoppingListCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-[family-name:var(--font-display)] font-bold">{list.nombre}</p>
+          <p className="truncate font-display font-bold">{list.nombre}</p>
           <p className="text-xs text-muted-foreground">{formatRelativeDay(list.fechaCreacion)}</p>
         </div>
         {isDone && (

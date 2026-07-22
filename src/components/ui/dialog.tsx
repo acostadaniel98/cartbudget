@@ -47,10 +47,16 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+        }}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+        }}
         className={cn(
           "fixed z-50 bg-card text-card-foreground shadow-2xl",
           "inset-x-0 bottom-0 rounded-t-3xl border-t border-border p-6 safe-bottom",
-          "max-h-[90vh] overflow-y-auto",
+          "max-h-[92dvh] overflow-y-auto overscroll-contain",
           "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom",
           "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom",
           "sm:inset-x-auto sm:top-1/2 sm:left-1/2 sm:bottom-auto sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl sm:border",
@@ -89,7 +95,7 @@ function DialogTitle({ className, ...props }: React.ComponentProps<typeof Dialog
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("font-[family-name:var(--font-display)] text-lg font-bold", className)}
+      className={cn("font-display text-lg font-bold", className)}
       {...props}
     />
   );

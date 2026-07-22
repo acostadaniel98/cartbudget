@@ -29,7 +29,7 @@ export function BudgetSummary({ summary, className }: BudgetSummaryProps) {
           </p>
           <p
             className={cn(
-              "tabular font-[family-name:var(--font-display)] text-3xl font-extrabold",
+              "tabular font-display text-3xl font-extrabold",
               hasBudget && sobrePresupuesto ? "text-destructive" : "text-foreground",
             )}
           >

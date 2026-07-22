@@ -1,11 +1,12 @@
 import { ROUTES } from "@/constants/routes";
 
 export const SITE_CONFIG = {
-  nombre: "CartBudget",
+  nombre: "AntBudget",
   descripcion:
-    "Acompaña tu compra de supermercado: agrega productos, controla cuánto te queda y termina más rápido.",
+    "AntBudget te ayuda a organizar tu compra del supermercado, controlar el presupuesto y ahorrar tiempo con listas inteligentes y seguimiento visual.",
   locale: "es-SV",
   moneda: "USD",
+  url: "https://antbudget.com",
 } as const;
 
 export interface NavItem {

@@ -34,7 +34,7 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
           <LayoutTemplate className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-[family-name:var(--font-display)] font-bold">{template.nombre}</p>
+          <p className="truncate font-display font-bold">{template.nombre}</p>
           <p className="text-xs text-muted-foreground">{summary.totalProductos} productos</p>
         </div>
       </div>

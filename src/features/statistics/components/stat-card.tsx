@@ -15,7 +15,7 @@ export function StatCard({ label, value, icon }: StatCardProps) {
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="tabular truncate font-[family-name:var(--font-display)] text-lg font-bold">{value}</p>
+          <p className="tabular truncate font-display text-lg font-bold">{value}</p>
           <p className="truncate text-xs text-muted-foreground">{label}</p>
         </div>
       </CardContent>

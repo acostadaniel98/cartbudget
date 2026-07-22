@@ -32,9 +32,7 @@ export default function DashboardPage() {
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             {SITE_CONFIG.nombre}
           </p>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-extrabold">
-            ¿Qué vamos a comprar?
-          </h1>
+          <h1 className="font-display text-2xl font-extrabold">¿Qué vamos a comprar?</h1>
         </div>
       </header>
 
@@ -47,7 +45,7 @@ export default function DashboardPage() {
       {!isLoadingActive && activeList && (
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="font-[family-name:var(--font-display)] font-bold">Compra activa</h2>
+            <h2 className="font-display font-bold">Compra activa</h2>
             <Link href={ROUTES.compra(activeList.id)} className="text-sm font-semibold text-primary">
               Continuar →
             </Link>
@@ -59,7 +57,7 @@ export default function DashboardPage() {
       )}
 
       <section className="space-y-2">
-        <h2 className="font-[family-name:var(--font-display)] font-bold">Compras recientes</h2>
+        <h2 className="font-display font-bold">Compras recientes</h2>
 
         {!isLoadingRecent && otherRecent.length === 0 && !activeList && (
           <EmptyState

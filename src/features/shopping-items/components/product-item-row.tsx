@@ -93,12 +93,7 @@ function ProductItemRowContent({
         onDragEnd={(_, info) => {
           swipeControls.start({ x: info.offset.x < -60 ? OPEN_X : 0 });
         }}
-        onTap={(event) => {
-          const target = event.target as HTMLElement;
-          if (target.closest("[data-tap-ignore]")) return;
-          onEdit();
-        }}
-        className="relative z-10 flex items-center gap-3 rounded-2xl border border-border bg-card px-3 py-3 shadow-sm"
+        className="relative z-10 flex items-center gap-3 rounded-2xl border border-border bg-card px-3 py-3 shadow-sm touch-pan-y"
       >
         {dragControls && (
           <button

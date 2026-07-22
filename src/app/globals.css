@@ -120,7 +120,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-[family-name:var(--font-body)] antialiased;
+    @apply bg-background text-foreground font-body antialiased;
     font-feature-settings: "cv11", "ss01";
   }
 
@@ -128,7 +128,7 @@
   h2,
   h3,
   h4 {
-    @apply font-[family-name:var(--font-display)];
+    @apply font-display;
   }
 
   .tabular {

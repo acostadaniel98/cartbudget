@@ -67,7 +67,7 @@ export function ProductFormDialog({
         ...defaultValues,
       });
     }
-  }, [open]);
+  }, [open, defaultCategoryId, defaultValues, reset]);
 
   const nombre = watch("nombre") ?? "";
   const categoria = watch("categoria");

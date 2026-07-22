@@ -65,23 +65,10 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{item?.nombre ?? "Producto"}</DialogTitle>
-          <DialogDescription>Ingresa la cantidad y el precio para marcarlo como comprado.</DialogDescription>
+          <DialogDescription>Ingresa primero el precio unitario y luego la cantidad.</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="compra-cantidad">Cantidad</Label>
-              <Input
-                id="compra-cantidad"
-                type="number"
-                inputMode="decimal"
-                step="any"
-                min={0}
-                autoFocus
-                {...register("cantidad")}
-              />
-              {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
-            </div>
             <div className="space-y-1.5">
               <Label htmlFor="compra-precio">Precio unitario</Label>
               <Input
@@ -90,19 +77,30 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
                 inputMode="decimal"
                 step="any"
                 min={0}
+                autoFocus
                 {...register("precioUnitario")}
               />
               {errors.precioUnitario && (
                 <p className="text-xs text-destructive">{errors.precioUnitario.message}</p>
               )}
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="compra-cantidad">Cantidad</Label>
+              <Input
+                id="compra-cantidad"
+                type="number"
+                inputMode="decimal"
+                step="any"
+                min={0}
+                {...register("cantidad")}
+              />
+              {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
+            </div>
           </div>
 
           <div className="flex items-center justify-between rounded-xl bg-muted px-4 py-3">
             <span className="text-sm font-medium text-muted-foreground">Total</span>
-            <span className="tabular font-[family-name:var(--font-display)] text-lg font-bold">
-              {formatCurrency(total)}
-            </span>
+            <span className="tabular font-display text-lg font-bold">{formatCurrency(total)}</span>
           </div>
 
           <DialogFooter>

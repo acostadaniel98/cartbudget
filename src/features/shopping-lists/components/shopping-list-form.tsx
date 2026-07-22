@@ -33,10 +33,11 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
   });
 
   const values = watch();
+  const serializedValues = JSON.stringify(values);
 
   React.useEffect(() => {
     onValuesChange(values, isValid);
-  }, [JSON.stringify(values), isValid]);
+  }, [serializedValues, isValid, onValuesChange, values]);
 
   return (
     <form id={formId} className="space-y-4" onSubmit={(e) => e.preventDefault()}>

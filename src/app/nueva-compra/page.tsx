@@ -80,7 +80,7 @@ function NuevaCompraForm() {
         />
 
         <div>
-          <h2 className="mb-2 font-[family-name:var(--font-display)] font-bold">Productos</h2>
+          <h2 className="mb-2 font-display font-bold">Productos</h2>
           <QuickAddProducts value={products} onChange={setProducts} defaultCategoryId={UNCATEGORIZED_ID} />
         </div>
       </div>

@@ -64,7 +64,7 @@ export function ShoppingItemManager({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-display)] font-bold">Productos</h2>
+        <h2 className="font-display font-bold">Productos</h2>
         <Button size="sm" onClick={() => setIsAddOpen(true)}>
           <Plus /> Agregar
         </Button>
