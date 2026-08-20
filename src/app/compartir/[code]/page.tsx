@@ -7,6 +7,7 @@ import { Check, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api/client";
 import { ROUTES } from "@/constants/routes";
+import { SITE_CONFIG } from "@/config/site";
 
 export default function ShareInvitationPage({ params }: { params: Promise<{ code: string }> }) {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function ShareInvitationPage({ params }: { params: Promise<{ code
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-10">
       <section className="bg-card w-full max-w-md rounded-3xl border p-6 text-center shadow-sm sm:p-8">
-        <Image src="/icons/ABLogo.png" alt="CartBudget" width={80} height={80} className="mx-auto size-20 rounded-3xl" priority />
+        <Image src="/icons/ABLogo.png" alt={SITE_CONFIG.nombre} width={80} height={80} className="mx-auto size-20 rounded-3xl" priority />
         <div className="mt-6 space-y-3">
           <div className="text-primary mx-auto flex size-12 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-950">
             {state === "accepted" ? <Check aria-hidden="true" /> : <UsersRound aria-hidden="true" />}

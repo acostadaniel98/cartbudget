@@ -7,7 +7,12 @@ import { FloatingCalculator } from "@/components/shared/floating-calculator";
 import { LocalDataMigration } from "@/components/shared/local-data-migration";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-const publicPaths = new Set(["/login", "/registro"]);
+const publicPaths = new Set([
+  "/login",
+  "/registro",
+  "/recuperar-contrasena",
+  "/restablecer-contrasena",
+]);
 
 export function AuthenticatedShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

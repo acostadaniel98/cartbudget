@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -9,22 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
+import { AuthCard } from "@/features/auth/components/auth-card";
+import { getAuthErrorMessage } from "@/features/auth/lib/auth-error";
+import { emailSchema, newPasswordSchema } from "@/features/auth/schemas/auth-schemas";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { SITE_CONFIG } from "@/config/site";
 
-const registrationSchema = z.object({
-  email: z.string().trim().toLowerCase().email().max(254),
-  password: z.string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .max(128, "La contraseña es demasiado larga")
-    .regex(/[A-Z]/, "La contraseña debe incluir una mayúscula")
-    .regex(/[a-z]/, "La contraseña debe incluir una minúscula")
-    .regex(/[0-9]/, "La contraseña debe incluir un número"),
-  confirmation: z.string().min(8).max(128),
-}).refine((values) => values.password === values.confirmation, {
-  path: ["confirmation"],
-  message: "Las contraseñas no coinciden",
-});
+const registrationSchema = z.object({ email: emailSchema }).and(newPasswordSchema);
 
 export default function RegistrationPage() {
   const router = useRouter();
@@ -53,7 +43,7 @@ export default function RegistrationPage() {
     });
 
     if (error) {
-      setMessage("No se pudo completar el registro. Revisa los datos e inténtalo nuevamente.");
+      setMessage(getAuthErrorMessage(error, "No se pudo completar el registro. Revisa los datos e inténtalo nuevamente."));
       setIsSubmitting(false);
       return;
     }
@@ -69,41 +59,83 @@ export default function RegistrationPage() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
-      <section className="bg-card w-full max-w-md rounded-3xl border p-6 shadow-sm sm:p-8">
-        <Image src="/icons/ABLogo.png" alt="CartBudget" width={64} height={64} className="size-16 rounded-2xl" priority />
-        <div className="mt-5 mb-8 space-y-2">
-          <p className="text-muted-foreground text-sm font-semibold">CartBudget</p>
-          <h1 className="font-display text-3xl font-extrabold">Crea tu cuenta</h1>
-          <p className="text-muted-foreground text-sm">Guarda tus compras y colabora con tu equipo.</p>
+    <AuthCard title="Crea tu cuenta" subtitle="Guarda tus compras y colabora con tu equipo.">
+      {isSuccess ? (
+        <div className="space-y-4">
+          <p className="text-sm" role="status">
+            {message}
+          </p>
+          <Button asChild className="w-full">
+            <Link href="/login">Ir a iniciar sesión</Link>
+          </Button>
         </div>
-
-        {isSuccess ? (
-          <div className="space-y-4">
-            <p className="text-sm" role="status">{message}</p>
-            <Button asChild className="w-full"><Link href="/login">Ir a iniciar sesión</Link></Button>
+      ) : (
+        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+          <div className="space-y-2">
+            <Label htmlFor="registration-email">Correo electrónico</Label>
+            <Input
+              id="registration-email"
+              type="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              maxLength={254}
+            />
           </div>
-        ) : (
-          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="registration-email">Correo electrónico</Label>
-              <Input id="registration-email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required maxLength={254} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="registration-password">Contraseña</Label>
-              <PasswordInput id="registration-password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} maxLength={128} aria-describedby="password-requirements" />
-              <p id="password-requirements" className="text-muted-foreground text-xs">Usa al menos 8 caracteres, una mayúscula, una minúscula y un número.</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="registration-confirmation">Confirmar contraseña</Label>
-              <PasswordInput id="registration-confirmation" autoComplete="new-password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={8} maxLength={128} />
-            </div>
-            {message && <p className="text-destructive text-sm" role="alert">{message}</p>}
-            <Button className="w-full" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creando cuenta…" : "Crear cuenta"}</Button>
-            <p className="text-muted-foreground text-center text-sm">¿Ya tienes cuenta? <Link className="text-primary font-semibold hover:underline" href="/login">Inicia sesión</Link></p>
-          </form>
-        )}
-      </section>
-    </main>
+          <div className="space-y-2">
+            <Label htmlFor="registration-password">Contraseña</Label>
+            <PasswordInput
+              id="registration-password"
+              autoComplete="new-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              minLength={8}
+              maxLength={128}
+              aria-describedby="password-requirements"
+            />
+            <p id="password-requirements" className="text-muted-foreground text-xs">
+              Usa al menos 8 caracteres, una mayúscula, una minúscula y un número.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="registration-confirmation">Confirmar contraseña</Label>
+            <PasswordInput
+              id="registration-confirmation"
+              autoComplete="new-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={confirmation}
+              onChange={(event) => setConfirmation(event.target.value)}
+              required
+              minLength={8}
+              maxLength={128}
+            />
+          </div>
+          {message && (
+            <p className="text-destructive text-sm" role="alert">
+              {message}
+            </p>
+          )}
+          <Button className="w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creando cuenta…" : "Crear cuenta"}
+          </Button>
+          <p className="text-muted-foreground text-center text-sm">
+            ¿Ya tienes cuenta?{" "}
+            <Link className="text-primary font-semibold hover:underline" href="/login">
+              Inicia sesión
+            </Link>
+          </p>
+        </form>
+      )}
+    </AuthCard>
   );
 }

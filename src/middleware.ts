@@ -15,6 +15,8 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute =
     request.nextUrl.pathname === "/login" ||
     request.nextUrl.pathname === "/registro" ||
+    request.nextUrl.pathname === "/recuperar-contrasena" ||
+    request.nextUrl.pathname === "/restablecer-contrasena" ||
     request.nextUrl.pathname === "/auth/callback";
   const isApiRoute = request.nextUrl.pathname.startsWith("/api/");
   const supabaseConfig = getSupabaseConfig();
