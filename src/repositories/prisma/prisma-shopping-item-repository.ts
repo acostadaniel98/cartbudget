@@ -56,17 +56,8 @@ export class PrismaShoppingItemRepository implements IShoppingItemRepository {
     return last ? last.orden + 1 : 0;
   }
 
-  private async assertListOwned(shoppingListId: string): Promise<void> {
-    const list = await this.db.shoppingList.findFirst({
-      where: { id: shoppingListId, userId: this.userId },
-      select: { id: true },
-    });
-    if (!list) throw new Error(`Lista de compra no encontrada: ${shoppingListId}`);
-  }
-
   async create(input: CreateShoppingItemInput): Promise<ShoppingItem> {
     await this.assertCanEditList(input.shoppingListId);
-    await this.assertListOwned(input.shoppingListId);
     const orden = await this.getNextOrder(input.shoppingListId);
     const cantidad = input.cantidad ?? 1;
     const precioUnitario = input.precioUnitario ?? 0;
@@ -92,7 +83,6 @@ export class PrismaShoppingItemRepository implements IShoppingItemRepository {
       throw new Error("Todos los productos deben pertenecer a la misma lista");
     }
     await this.assertCanEditList(inputs[0].shoppingListId);
-    await this.assertListOwned(inputs[0].shoppingListId);
     const startOrder = await this.getNextOrder(inputs[0].shoppingListId);
     const records = await this.db.$transaction(
       inputs.map((input, index) => {
