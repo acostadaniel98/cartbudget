@@ -18,25 +18,45 @@ export function useShoppingList(id: string) {
   }, [mounted, id]);
 
   const update = async (patch: UpdateShoppingListInput) => {
-    return shoppingListService.update(id, patch);
+    try {
+      const updated = await shoppingListService.update(id, patch);
+      toast.success("Compra actualizada");
+      return updated;
+    } catch {
+      toast.error("No se pudo actualizar la compra", { description: "Inténtalo de nuevo." });
+      return undefined;
+    }
   };
 
   const setEsPlantilla = async (esPlantilla: boolean) => {
-    await shoppingListService.setEsPlantilla(id, esPlantilla);
-    toast.success(esPlantilla ? "Guardada como plantilla" : "Ya no es una plantilla");
+    try {
+      await shoppingListService.setEsPlantilla(id, esPlantilla);
+      toast.success(esPlantilla ? "Guardada como plantilla" : "Ya no es una plantilla");
+    } catch {
+      toast.error("No se pudo actualizar la plantilla", { description: "Inténtalo de nuevo." });
+    }
   };
 
   const remove = async () => {
-    await shoppingListService.delete(id);
-    toast.success("Compra eliminada");
-    router.push(ROUTES.inicio);
+    try {
+      await shoppingListService.delete(id);
+      toast.success("Compra eliminada");
+      router.push(ROUTES.inicio);
+    } catch {
+      toast.error("No se pudo eliminar la compra", { description: "Inténtalo de nuevo." });
+    }
   };
 
   const duplicate = async (nuevoNombre?: string) => {
-    const newList = await shoppingListService.duplicate(id, nuevoNombre);
-    toast.success("Compra duplicada");
-    router.push(ROUTES.compra(newList.id));
-    return newList;
+    try {
+      const newList = await shoppingListService.duplicate(id, nuevoNombre);
+      toast.success("Compra duplicada");
+      router.push(ROUTES.compra(newList.id));
+      return newList;
+    } catch {
+      toast.error("No se pudo duplicar la compra", { description: "Inténtalo de nuevo." });
+      return undefined;
+    }
   };
 
   return {

@@ -8,6 +8,7 @@ export const shoppingItemSchema = z.object({
     .max(80, "El nombre es muy largo (máximo 80 caracteres)"),
   cantidad: z.coerce
     .number({ message: "Ingresa un número válido" })
+    .int("La cantidad debe ser un número entero")
     .positive("La cantidad debe ser mayor a 0")
     .default(1),
   categoria: z.string().min(1, "Elige una categoría"),
@@ -20,6 +21,7 @@ export type ShoppingItemFormOutput = z.output<typeof shoppingItemSchema>;
 export const purchaseEntrySchema = z.object({
   cantidad: z.coerce
     .number({ message: "Ingresa un número válido" })
+    .int("La cantidad debe ser un número entero")
     .positive("La cantidad debe ser mayor a 0"),
   precioUnitario: z.coerce
     .number({ message: "Ingresa un precio válido" })

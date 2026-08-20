@@ -34,25 +34,49 @@ export function ProductList({
   return (
     <div className="space-y-6">
       {pendientes.length > 0 && (
-        <Reorder.Group
-          as="div"
-          axis="y"
-          values={pendientes}
-          onReorder={(newOrder) => onReorderPending(newOrder.map((i) => i.id))}
-          className="space-y-2"
-        >
-          {pendientes.map((item) => (
-            <ReorderableProductItem
-              key={item.id}
-              item={item}
-              category={categoryById.get(item.categoria)}
-              onToggle={() => onToggle(item)}
-              onEdit={() => onEdit(item)}
-              onDelete={() => onDelete(item)}
-              onMarkNotFound={() => onMarkNotFound(item)}
-            />
-          ))}
-        </Reorder.Group>
+        <>
+          <p id="orden-productos-ayuda" className="sr-only">
+            Puedes arrastrar productos o usar las acciones para moverlos arriba y abajo.
+          </p>
+          <Reorder.Group
+            as="div"
+            axis="y"
+            values={pendientes}
+            onReorder={(newOrder) => onReorderPending(newOrder.map((i) => i.id))}
+            aria-describedby="orden-productos-ayuda"
+            className="space-y-2"
+          >
+            {pendientes.map((item, index) => (
+              <ReorderableProductItem
+                key={item.id}
+                item={item}
+                category={categoryById.get(item.categoria)}
+                onToggle={() => onToggle(item)}
+                onEdit={() => onEdit(item)}
+                onDelete={() => onDelete(item)}
+                onMarkNotFound={() => onMarkNotFound(item)}
+                onMoveUp={
+                  index > 0
+                    ? () => {
+                        const nextOrder = [...pendientes];
+                        [nextOrder[index - 1], nextOrder[index]] = [nextOrder[index], nextOrder[index - 1]];
+                        onReorderPending(nextOrder.map((product) => product.id));
+                      }
+                    : undefined
+                }
+                onMoveDown={
+                  index < pendientes.length - 1
+                    ? () => {
+                        const nextOrder = [...pendientes];
+                        [nextOrder[index], nextOrder[index + 1]] = [nextOrder[index + 1], nextOrder[index]];
+                        onReorderPending(nextOrder.map((product) => product.id));
+                      }
+                    : undefined
+                }
+              />
+            ))}
+          </Reorder.Group>
+        </>
       )}
 
       {resueltos.length > 0 && (

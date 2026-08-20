@@ -79,11 +79,11 @@ export function ProductFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100dvh-0.5rem)] p-4 sm:max-h-[92dvh] sm:p-6">
         <DialogHeader>
           <DialogTitle>{mode === "create" ? "Agregar producto" : "Editar producto"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-5 pb-1">
           <div className="space-y-1.5">
             <Label htmlFor="producto-nombre">Producto</Label>
             <ProductAutocomplete
@@ -105,10 +105,13 @@ export function ProductFormDialog({
               <Input
                 id="producto-cantidad"
                 type="number"
-                inputMode="decimal"
-                step="any"
-                min={0}
+                inputMode="numeric"
+                step="1"
+                min={1}
                 {...register("cantidad")}
+                onKeyDown={(event) => {
+                  if (["e", "E", "+", "-", ".", ","].includes(event.key)) event.preventDefault();
+                }}
               />
               {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
             </div>
@@ -131,8 +134,8 @@ export function ProductFormDialog({
             />
           </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
+          <DialogFooter className="sticky bottom-0 z-10 -mx-4 mt-7 bg-card px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
+            <Button type="submit" size="lg" disabled={isSubmitting}>
               {mode === "create" ? "Agregar" : "Guardar cambios"}
             </Button>
           </DialogFooter>

@@ -3,6 +3,7 @@ import type {
   ShoppingList,
   UpdateShoppingListInput,
 } from "@/domain/models/shopping-list";
+import type { CreateShoppingItemInput, ShoppingItem } from "@/domain/models/shopping-item";
 
 /**
  * Contrato que debe cumplir cualquier implementación de persistencia para
@@ -16,6 +17,10 @@ export interface IShoppingListRepository {
   getRecent(limit: number): Promise<ShoppingList[]>;
   getTemplates(): Promise<ShoppingList[]>;
   create(input: CreateShoppingListInput): Promise<ShoppingList>;
+  createWithItems(
+    input: CreateShoppingListInput,
+    items: Omit<CreateShoppingItemInput, "shoppingListId">[],
+  ): Promise<{ list: ShoppingList; items: ShoppingItem[] }>;
   update(id: string, patch: UpdateShoppingListInput): Promise<ShoppingList>;
   delete(id: string): Promise<void>;
 }

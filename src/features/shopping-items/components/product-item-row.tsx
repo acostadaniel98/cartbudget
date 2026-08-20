@@ -2,8 +2,16 @@
 
 import * as React from "react";
 import { Reorder, motion, useDragControls, useAnimation, type DragControls } from "framer-motion";
-import { GripVertical, Pencil, SearchX, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Ellipsis, GripVertical, Pencil, SearchX, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { getCategoryIcon } from "@/lib/category-icon";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -22,6 +30,8 @@ interface ProductItemRowContentProps {
   onEdit: () => void;
   onDelete: () => void;
   onMarkNotFound: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 function ProductItemRowContent({
@@ -32,6 +42,8 @@ function ProductItemRowContent({
   onEdit,
   onDelete,
   onMarkNotFound,
+  onMoveUp,
+  onMoveDown,
 }: ProductItemRowContentProps) {
   const swipeControls = useAnimation();
   const Icon = category ? getCategoryIcon(category.icono) : undefined;
@@ -140,6 +152,37 @@ function ProductItemRowContent({
         {isPurchased && (
           <span className="tabular shrink-0 text-sm font-semibold">{formatCurrency(item.precioTotal)}</span>
         )}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon-sm" aria-label={`Acciones para ${item.nombre}`}>
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={onEdit}>
+              <Pencil className="size-4" /> Editar producto
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={onMarkNotFound}>
+              <SearchX className="size-4" /> Marcar como agotado
+            </DropdownMenuItem>
+            {(onMoveUp || onMoveDown) && <DropdownMenuSeparator />}
+            {onMoveUp && (
+              <DropdownMenuItem onSelect={onMoveUp}>
+                <ArrowUp className="size-4" /> Mover arriba
+              </DropdownMenuItem>
+            )}
+            {onMoveDown && (
+              <DropdownMenuItem onSelect={onMoveDown}>
+                <ArrowDown className="size-4" /> Mover abajo
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onSelect={onDelete}>
+              <Trash2 className="size-4" /> Eliminar producto
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </motion.div>
     </div>
   );
@@ -152,6 +195,8 @@ interface ProductItemProps {
   onEdit: () => void;
   onDelete: () => void;
   onMarkNotFound: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
 /** Fila arrastrable: debe usarse dentro de un <Reorder.Group>. */

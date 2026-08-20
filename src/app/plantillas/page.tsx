@@ -39,6 +39,14 @@ export default function PlantillasPage() {
         />
       )}
 
+      {isLoading && (
+        <div className="grid gap-3 sm:grid-cols-2" role="status" aria-label="Cargando plantillas">
+          <div className="h-32 animate-pulse rounded-2xl bg-muted" />
+          <div className="h-32 animate-pulse rounded-2xl bg-muted" />
+          <span className="sr-only">Cargando plantillas</span>
+        </div>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2">
         {templates.map((template) => (
           <TemplateCard key={template.id} template={template} />

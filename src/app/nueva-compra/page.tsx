@@ -12,7 +12,6 @@ import {
 } from "@/features/shopping-lists/components/quick-add-products";
 import type { ShoppingListFormValues } from "@/features/shopping-lists/schemas/shopping-list-schema";
 import { shoppingListService } from "@/services/shopping-list-service";
-import { shoppingItemService } from "@/services/shopping-item-service";
 import { UNCATEGORIZED_ID } from "@/constants/categories";
 import { ROUTES } from "@/constants/routes";
 
@@ -32,6 +31,11 @@ function NuevaCompraForm() {
 
   const canSave = isListValid && listValues.nombre?.trim().length > 0 && !isSaving;
 
+  const handleListValuesChange = React.useCallback((values: ShoppingListFormValues, valid: boolean) => {
+    setListValues(values);
+    setIsListValid(valid);
+  }, []);
+
   const handleSave = async () => {
     if (!canSave) return;
     setIsSaving(true);
@@ -41,26 +45,23 @@ function NuevaCompraForm() {
           ? undefined
           : Number(listValues.presupuesto);
 
-      const newList = await shoppingListService.create({
+      const { list: newList } = await shoppingListService.createWithItems({
         nombre: listValues.nombre.trim(),
         presupuesto: presupuestoValue,
         notas: listValues.notas?.trim() || undefined,
         esPlantilla,
-      });
-
-      if (products.length > 0) {
-        await shoppingItemService.addMany(
-          products.map((p) => ({
-            shoppingListId: newList.id,
-            nombre: p.nombre,
-            cantidad: p.cantidad,
-            categoria: p.categoria,
-          })),
-        );
-      }
+      }, products.map((p) => ({
+        nombre: p.nombre,
+        cantidad: p.cantidad,
+        categoria: p.categoria,
+      })));
 
       toast.success(esPlantilla ? "Plantilla creada" : "Compra creada");
       router.push(ROUTES.compra(newList.id));
+    } catch {
+      toast.error("No se pudo guardar la compra", {
+        description: "Revisa tu conexión local e inténtalo de nuevo.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -73,10 +74,7 @@ function NuevaCompraForm() {
       <div className="space-y-6 px-4">
         <ShoppingListForm
           formId="nueva-compra-form"
-          onValuesChange={(values, valid) => {
-            setListValues(values);
-            setIsListValid(valid);
-          }}
+          onValuesChange={handleListValuesChange}
         />
 
         <div>

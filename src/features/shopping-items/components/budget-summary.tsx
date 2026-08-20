@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, CircleDashed } from "lucide-react";
+import { AlertTriangle, CheckCircle2, CircleDashed } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ interface BudgetSummaryProps {
 export function BudgetSummary({ summary, className }: BudgetSummaryProps) {
   const { presupuesto, gastado, restante, porcentaje, sobrePresupuesto, pendientes, comprados } = summary;
   const hasBudget = presupuesto !== undefined;
+  const isNearLimit = hasBudget && !sobrePresupuesto && (porcentaje ?? 0) >= 80;
 
   return (
     <div
@@ -48,12 +49,27 @@ export function BudgetSummary({ summary, className }: BudgetSummaryProps) {
         <div className="mt-4 space-y-1.5">
           <Progress
             value={porcentaje ?? 0}
+            aria-label={`Porcentaje del presupuesto utilizado: ${Math.round(porcentaje ?? 0)}%`}
             indicatorClassName={sobrePresupuesto ? "bg-destructive" : "bg-primary"}
           />
           <div className="flex justify-between text-xs text-muted-foreground">
             <span className="tabular">{formatCurrency(gastado)} gastado</span>
             <span className="tabular">{Math.round(porcentaje ?? 0)}%</span>
           </div>
+        </div>
+      )}
+
+      {hasBudget && sobrePresupuesto && (
+        <div className="mt-4 flex items-start gap-2 rounded-xl bg-destructive/10 px-3 py-2.5 text-sm text-destructive" role="alert">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <p>Has superado tu presupuesto por {formatCurrency(Math.abs(restante ?? 0))}.</p>
+        </div>
+      )}
+
+      {hasBudget && isNearLimit && (
+        <div className="mt-4 flex items-start gap-2 rounded-xl bg-warning/15 px-3 py-2.5 text-sm text-accent-foreground" role="status">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <p>Ya utilizaste el {Math.round(porcentaje ?? 0)}% de tu presupuesto.</p>
         </div>
       )}
 

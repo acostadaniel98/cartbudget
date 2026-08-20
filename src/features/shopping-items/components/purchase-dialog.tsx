@@ -62,12 +62,12 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100dvh-0.5rem)] p-4 sm:max-h-[92dvh] sm:p-6">
         <DialogHeader>
           <DialogTitle>{item?.nombre ?? "Producto"}</DialogTitle>
           <DialogDescription>Ingresa primero el precio unitario y luego la cantidad.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-5 pb-1">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="compra-precio">Precio unitario</Label>
@@ -75,10 +75,13 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
                 id="compra-precio"
                 type="number"
                 inputMode="decimal"
-                step="any"
+                step="0.01"
                 min={0}
                 autoFocus
                 {...register("precioUnitario")}
+                onKeyDown={(event) => {
+                  if (["e", "E", "+", "-"].includes(event.key)) event.preventDefault();
+                }}
               />
               {errors.precioUnitario && (
                 <p className="text-xs text-destructive">{errors.precioUnitario.message}</p>
@@ -89,10 +92,13 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
               <Input
                 id="compra-cantidad"
                 type="number"
-                inputMode="decimal"
-                step="any"
-                min={0}
+                inputMode="numeric"
+                step="1"
+                min={1}
                 {...register("cantidad")}
+                onKeyDown={(event) => {
+                  if (["e", "E", "+", "-", ".", ","].includes(event.key)) event.preventDefault();
+                }}
               />
               {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
             </div>
@@ -103,8 +109,8 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
             <span className="tabular font-display text-lg font-bold">{formatCurrency(total)}</span>
           </div>
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
+          <DialogFooter className="sticky bottom-0 z-10 -mx-4 mt-7 bg-card px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
+            <Button type="submit" size="lg" disabled={isSubmitting}>
               Marcar como comprado
             </Button>
           </DialogFooter>

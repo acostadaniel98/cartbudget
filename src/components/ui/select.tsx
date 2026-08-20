@@ -49,9 +49,6 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         position={position}
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-        }}
         className={cn(
           "z-50 max-h-72 min-w-32 overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-lg",
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

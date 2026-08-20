@@ -14,6 +14,16 @@ import { useListSummary } from "@/features/shopping-items/hooks/use-list-summary
 import { ROUTES } from "@/constants/routes";
 import { SITE_CONFIG } from "@/config/site";
 
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-3" aria-label="Cargando compras" role="status">
+      <div className="h-5 w-32 animate-pulse rounded-lg bg-muted" />
+      <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+      <span className="sr-only">Cargando compras</span>
+    </div>
+  );
+}
+
 function ActiveListSummary({ listId, presupuesto }: { listId: string; presupuesto: number | undefined }) {
   const { summary } = useListSummary(listId, presupuesto);
   return <BudgetSummary summary={summary} />;
@@ -56,6 +66,8 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {isLoadingActive && <DashboardSkeleton />}
+
       <section className="space-y-2">
         <h2 className="font-display font-bold">Compras recientes</h2>
 
@@ -65,6 +77,13 @@ export default function DashboardPage() {
             title="Todavía no tienes compras"
             description="Crea tu primera lista para empezar a ahorrar tiempo en el súper."
           />
+        )}
+
+        {isLoadingRecent && (
+          <div className="space-y-2" aria-hidden="true">
+            <div className="h-20 animate-pulse rounded-2xl bg-muted" />
+            <div className="h-20 animate-pulse rounded-2xl bg-muted" />
+          </div>
         )}
 
         <div className="space-y-2">

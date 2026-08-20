@@ -3,9 +3,11 @@ import type {
   ShoppingList,
   UpdateShoppingListInput,
 } from "@/domain/models/shopping-list";
+import type { CreateShoppingItemInput, ShoppingItem } from "@/domain/models/shopping-item";
 import { ItemStatus } from "@/domain/models/item-status";
 import { DexieShoppingListRepository } from "@/repositories/dexie/dexie-shopping-list-repository";
 import { DexieShoppingItemRepository } from "@/repositories/dexie/dexie-shopping-item-repository";
+import { DexieFrequentProductRepository } from "@/repositories/dexie/dexie-frequent-product-repository";
 
 /**
  * Servicio de aplicación: orquesta el repositorio de listas (y, cuando es
@@ -18,6 +20,7 @@ export class ShoppingListService {
   constructor(
     private readonly lists = new DexieShoppingListRepository(),
     private readonly items = new DexieShoppingItemRepository(),
+    private readonly frequentProducts = new DexieFrequentProductRepository(),
   ) {}
 
   getAll(): Promise<ShoppingList[]> {
@@ -50,6 +53,23 @@ export class ShoppingListService {
 
   create(input: CreateShoppingListInput): Promise<ShoppingList> {
     return this.lists.create(input);
+  }
+
+  async createWithItems(
+    input: CreateShoppingListInput,
+    items: Omit<CreateShoppingItemInput, "shoppingListId">[],
+  ): Promise<{ list: ShoppingList; items: ShoppingItem[] }> {
+    const result = await this.lists.createWithItems(input, items);
+    await Promise.all(
+      result.items.map((item) =>
+        this.frequentProducts.recordUsage({
+          nombre: item.nombre,
+          categoria: item.categoria,
+          cantidad: item.cantidad,
+        }),
+      ),
+    );
+    return result;
   }
 
   update(id: string, patch: UpdateShoppingListInput): Promise<ShoppingList> {

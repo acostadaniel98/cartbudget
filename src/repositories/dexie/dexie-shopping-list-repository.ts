@@ -4,6 +4,9 @@ import type {
   ShoppingList,
   UpdateShoppingListInput,
 } from "@/domain/models/shopping-list";
+import type { CreateShoppingItemInput, ShoppingItem } from "@/domain/models/shopping-item";
+import { calculateItemTotal } from "@/domain/services/budget-calculator";
+import { ItemStatus } from "@/domain/models/item-status";
 import { generateId } from "@/lib/id";
 import { getDb } from "./database";
 
@@ -44,6 +47,44 @@ export class DexieShoppingListRepository implements IShoppingListRepository {
     };
     await getDb().shoppingLists.add(list);
     return list;
+  }
+
+  async createWithItems(
+    input: CreateShoppingListInput,
+    inputs: Omit<CreateShoppingItemInput, "shoppingListId">[],
+  ): Promise<{ list: ShoppingList; items: ShoppingItem[] }> {
+    const now = Date.now();
+    const list: ShoppingList = {
+      id: generateId(),
+      nombre: input.nombre.trim(),
+      presupuesto: input.presupuesto,
+      esPlantilla: input.esPlantilla ?? false,
+      notas: input.notas,
+      fechaCreacion: now,
+      fechaActualizacion: now,
+    };
+    const items: ShoppingItem[] = inputs.map((input, index) => {
+      const cantidad = input.cantidad ?? 1;
+      const precioUnitario = input.precioUnitario ?? 0;
+      return {
+        id: generateId(),
+        shoppingListId: list.id,
+        nombre: input.nombre.trim(),
+        cantidad,
+        precioUnitario,
+        precioTotal: calculateItemTotal(cantidad, precioUnitario),
+        categoria: input.categoria,
+        estado: ItemStatus.PENDIENTE,
+        notas: input.notas,
+        orden: index,
+      };
+    });
+    const db = getDb();
+    await db.transaction("rw", db.shoppingLists, db.shoppingItems, async () => {
+      await db.shoppingLists.add(list);
+      if (items.length > 0) await db.shoppingItems.bulkAdd(items);
+    });
+    return { list, items };
   }
 
   async update(id: string, patch: UpdateShoppingListInput): Promise<ShoppingList> {

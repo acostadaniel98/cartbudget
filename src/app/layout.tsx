@@ -86,7 +86,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#faf9f5" },
@@ -102,7 +101,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ServiceWorkerRegister />
           <DatabaseBootstrap />
           <OfflineBanner />
-          <div className="mx-auto min-h-dvh max-w-md pb-20">{children}</div>
+          <div className="mx-auto min-h-dvh max-w-3xl pb-20">{children}</div>
           <BottomNav />
           <Toaster />
         </ThemeProvider>

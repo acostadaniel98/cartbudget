@@ -47,12 +47,6 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        onOpenAutoFocus={(event) => {
-          event.preventDefault();
-        }}
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-        }}
         className={cn(
           "fixed z-50 bg-card text-card-foreground shadow-2xl",
           "inset-x-0 bottom-0 rounded-t-3xl border-t border-border p-6 safe-bottom",

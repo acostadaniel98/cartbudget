@@ -23,6 +23,7 @@ export function ProductAutocomplete({
   autoFocus,
 }: ProductAutocompleteProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const suggestions = useFrequentSuggestions(value, 5);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,6 +38,11 @@ export function ProductAutocomplete({
   }, []);
 
   const showSuggestions = isOpen && suggestions.length > 0;
+  const listboxId = "producto-sugerencias";
+
+  React.useEffect(() => {
+    setActiveIndex(0);
+  }, [value, suggestions.length]);
 
   return (
     <div ref={containerRef} className="relative">
@@ -46,26 +52,47 @@ export function ProductAutocomplete({
           onChange(e.target.value);
           setIsOpen(true);
         }}
+          onKeyDown={(event) => {
+            if (!showSuggestions) return;
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setActiveIndex((index) => Math.min(index + 1, suggestions.length - 1));
+            } else if (event.key === "ArrowUp") {
+              event.preventDefault();
+              setActiveIndex((index) => Math.max(index - 1, 0));
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              onSelectSuggestion(suggestions[activeIndex]);
+              setIsOpen(false);
+            } else if (event.key === "Escape") {
+              event.preventDefault();
+              setIsOpen(false);
+            }
+          }}
         onFocus={() => setIsOpen(true)}
         placeholder={placeholder}
         autoFocus={autoFocus}
         autoComplete="off"
         aria-autocomplete="list"
         aria-expanded={showSuggestions}
+          aria-controls={showSuggestions ? listboxId : undefined}
+          aria-activedescendant={showSuggestions ? `${listboxId}-${activeIndex}` : undefined}
       />
       {showSuggestions && (
         <ul
+            id={listboxId}
           role="listbox"
           className={cn(
             "absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border bg-popover shadow-lg",
           )}
         >
-          {suggestions.map((product) => (
+          {suggestions.map((product, index) => (
             <li key={product.id}>
               <button
                 type="button"
+                id={`${listboxId}-${index}`}
                 role="option"
-                aria-selected={false}
+                aria-selected={index === activeIndex}
                 onClick={() => {
                   onSelectSuggestion(product);
                   setIsOpen(false);

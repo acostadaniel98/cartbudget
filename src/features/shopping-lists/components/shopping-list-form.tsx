@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   shoppingListSchema,
   type ShoppingListFormValues,
@@ -24,7 +25,7 @@ interface ShoppingListFormProps {
 export function ShoppingListForm({ defaultValues, onValuesChange, formId }: ShoppingListFormProps) {
   const {
     register,
-    watch,
+    control,
     formState: { errors, isValid },
   } = useForm<ShoppingListFormValues>({
     resolver: zodResolver(shoppingListSchema),
@@ -32,15 +33,17 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
     defaultValues: { nombre: "", presupuesto: "", notas: "", ...defaultValues },
   });
 
-  const values = watch();
+  const values = useWatch({ control }) as ShoppingListFormValues;
   const serializedValues = JSON.stringify(values);
+  const valuesRef = React.useRef(values);
+  valuesRef.current = values;
 
   React.useEffect(() => {
-    onValuesChange(values, isValid);
-  }, [serializedValues, isValid, onValuesChange, values]);
+    onValuesChange(valuesRef.current, isValid);
+  }, [isValid, onValuesChange, serializedValues]);
 
   return (
-    <form id={formId} className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+    <form id={formId} className="space-y-5" onSubmit={(e) => e.preventDefault()}>
       <div className="space-y-1.5">
         <Label htmlFor="lista-nombre">Nombre de la compra</Label>
         <Input
@@ -58,15 +61,31 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
           id="lista-presupuesto"
           type="number"
           inputMode="decimal"
-          step="any"
+          step="0.01"
           min={0}
           placeholder="$0.00"
+          aria-describedby="lista-presupuesto-ayuda"
           {...register("presupuesto")}
+          onKeyDown={(event) => {
+            if (["e", "E", "+", "-"].includes(event.key)) event.preventDefault();
+          }}
         />
         {errors.presupuesto && <p className="text-xs text-destructive">{errors.presupuesto.message}</p>}
-        <p className="text-xs text-muted-foreground">
+        <p id="lista-presupuesto-ayuda" className="text-xs text-muted-foreground">
           Si lo dejas vacío, solo veremos cuánto llevas gastado, sin restante ni porcentaje.
         </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="lista-notas">Notas (opcional)</Label>
+        <Textarea
+          id="lista-notas"
+          rows={3}
+          maxLength={200}
+          placeholder="Ej. Comprar en la tienda del barrio"
+          {...register("notas")}
+        />
+        {errors.notas && <p className="text-xs text-destructive">{errors.notas.message}</p>}
       </div>
     </form>
   );
