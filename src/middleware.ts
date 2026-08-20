@@ -1,22 +1,35 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-function getSupabaseKey() {
+function getSupabaseConfig() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!key) {
-    throw new Error("Falta NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY en las variables de entorno");
-  }
-  return key;
+
+  return url && key ? { url, key } : null;
 }
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const isPublicRoute =
+    request.nextUrl.pathname === "/login" ||
+    request.nextUrl.pathname === "/registro" ||
+    request.nextUrl.pathname === "/auth/callback";
+  const isApiRoute = request.nextUrl.pathname.startsWith("/api/");
+  const supabaseConfig = getSupabaseConfig();
+
+  if (!supabaseConfig) {
+    if (isPublicRoute) return response;
+    return NextResponse.json(
+      { error: { code: "AUTH_CONFIGURATION_ERROR", message: "La autenticación no está configurada" } },
+      { status: 503 },
+    );
+  }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    getSupabaseKey(),
+    supabaseConfig.url,
+    supabaseConfig.key,
     {
       cookies: {
         getAll() {
@@ -31,14 +44,18 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isPublicRoute =
-    request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/registro" ||
-    request.nextUrl.pathname === "/auth/callback";
-  const isApiRoute = request.nextUrl.pathname.startsWith("/api/");
+  let user;
+  try {
+    ({
+      data: { user },
+    } = await supabase.auth.getUser());
+  } catch {
+    if (isPublicRoute) return response;
+    return NextResponse.json(
+      { error: { code: "AUTH_UNAVAILABLE", message: "El servicio de autenticación no está disponible" } },
+      { status: 503 },
+    );
+  }
 
   if (!user && !isPublicRoute && !isApiRoute) {
     const loginUrl = request.nextUrl.clone();
