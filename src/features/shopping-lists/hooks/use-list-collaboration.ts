@@ -67,6 +67,24 @@ export function useListCollaboration(listId: string, enabled: boolean) {
     }
   };
 
+  const updateMemberRole = async (memberId: string, role: "EDITOR" | "VIEWER") => {
+    const previous = members;
+    setMembers((current) =>
+      current?.map((member) => (member.id === memberId ? { ...member, role } : member)),
+    );
+    try {
+      const updated = await apiFetch<ListMember>(`/api/v1/lists/${listId}/members/${memberId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ role }),
+      });
+      setMembers((current) => current?.map((member) => (member.id === memberId ? updated : member)));
+      toast.success("Permiso actualizado");
+    } catch (error) {
+      setMembers(previous);
+      toast.error(error instanceof Error ? error.message : "No se pudo cambiar el permiso");
+    }
+  };
+
   const revokeInvitation = async (invitationId: string) => {
     const previous = invitations;
     setInvitations((current) => current?.filter((invitation) => invitation.id !== invitationId));
@@ -89,6 +107,7 @@ export function useListCollaboration(listId: string, enabled: boolean) {
     invitations: invitations ?? [],
     isLoadingInvitations: invitations === undefined,
     removeMember,
+    updateMemberRole,
     revokeInvitation,
     addInvitation,
   };

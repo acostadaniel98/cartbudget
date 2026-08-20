@@ -16,20 +16,44 @@ import type {
 
 const REORDER_DEBOUNCE_MS = 400;
 
+/** Cuenta cuántas operaciones en curso protegen a cada id de ser
+ * sobrescrito por una recarga. Un Set simple no alcanza: reordenar y editar
+ * pueden solapar el mismo producto, y si cualquiera de los dos "suelta" el
+ * id al terminar, deja al otro sin protección. Con conteo, el id solo se
+ * libera cuando TODAS las operaciones que lo tocaban ya terminaron. */
+function usePendingIds() {
+  const counts = useRef<Map<string, number>>(new Map());
+  return {
+    begin: (id: string) => counts.current.set(id, (counts.current.get(id) ?? 0) + 1),
+    end: (id: string) => {
+      const current = counts.current.get(id) ?? 0;
+      if (current <= 1) counts.current.delete(id);
+      else counts.current.set(id, current - 1);
+    },
+    has: (id: string) => (counts.current.get(id) ?? 0) > 0,
+  };
+}
+
 /**
  * Estado de una lista de productos con soporte para múltiples personas
  * editando la misma compra a la vez ("comprar en conjunto").
  *
- * Dos ideas sostienen esto:
+ * Tres ideas sostienen esto:
  * 1. Actualizaciones optimistas: cada acción se refleja en pantalla al
  *    instante (sin esperar la red) y solo se revierte si el servidor
  *    responde con un error. Sin esto, marcar un producto se siente lento
  *    en el súper, donde la señal suele ser mala.
- * 2. Los ids con una operación en curso (pendingIds) se protegen de los
- *    recargas que dispara Realtime cuando OTRA persona cambia la lista al
- *    mismo tiempo: si no se protegieran, un recargo que llega a mitad de
- *    un arrastre o de una edición podría "pisar" el cambio local antes de
- *    que el propio servidor confirme la operación.
+ * 2. Los ids con una operación en curso se protegen (ver `usePendingIds`)
+ *    de las recargas que dispara Realtime cuando OTRA persona cambia la
+ *    lista al mismo tiempo: si no se protegieran, una recarga que llega a
+ *    mitad de un arrastre o de una edición podría "pisar" el cambio local
+ *    antes de que el propio servidor confirme la operación.
+ * 3. Cada mutación que se confirma invalida cualquier recarga anterior que
+ *    todavía esté en camino (vía `requestSeq`): sin esto, una carga lenta
+ *    (por ejemplo la que dispara el montaje de la página) puede resolver
+ *    DESPUÉS de que un producto recién agregado ya se confirmó, y como esa
+ *    carga vieja no sabe nada de ese producto, lo borraría de la pantalla
+ *    hasta recargar.
  */
 export function useShoppingItems(shoppingListId: string, presupuesto: number | undefined) {
   const [items, setItems] = useState<ShoppingItem[] | undefined>(undefined);
@@ -37,9 +61,16 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
   itemsRef.current = items ?? [];
 
   const requestSeq = useRef(0);
-  const pendingEditIds = useRef<Set<string>>(new Set());
+  const pendingEdits = usePendingIds();
   const pendingDeleteIds = useRef<Set<string>>(new Set());
   const pendingAddTempIds = useRef<Set<string>>(new Set());
+
+  /** Invalida cualquier `fetchItems` en curso: su respuesta, cuando
+   * llegue, se descartará por completo en vez de poder pisar el estado
+   * que una mutación recién confirmada acaba de dejar. */
+  const invalidateInFlightFetches = () => {
+    requestSeq.current += 1;
+  };
 
   const fetchItems = async () => {
     const seq = ++requestSeq.current;
@@ -50,13 +81,13 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
       if (seq === requestSeq.current) setItems((current) => current ?? []);
       return;
     }
-    if (seq !== requestSeq.current) return; // una respuesta más reciente ya llegó
+    if (seq !== requestSeq.current) return; // una respuesta más reciente (o una mutación) ya la invalidó
 
     setItems((current) => {
       const currentById = new Map((current ?? []).map((item) => [item.id, item]));
       const withoutOptimisticDeletes = data.filter((item) => !pendingDeleteIds.current.has(item.id));
       const merged = withoutOptimisticDeletes.map((item) =>
-        pendingEditIds.current.has(item.id) ? (currentById.get(item.id) ?? item) : item,
+        pendingEdits.has(item.id) ? (currentById.get(item.id) ?? item) : item,
       );
       const stillPendingAdds = [...pendingAddTempIds.current]
         .map((tempId) => currentById.get(tempId))
@@ -111,6 +142,7 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
       toast.error("No se pudo agregar el producto", { description: "Inténtalo de nuevo." });
     } finally {
       pendingAddTempIds.current.delete(tempId);
+      invalidateInFlightFetches();
     }
   };
 
@@ -129,7 +161,7 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
     const previous = itemsRef.current.find((item) => item.id === id);
     if (!previous) return;
 
-    pendingEditIds.current.add(id);
+    pendingEdits.begin(id);
     setItems((current) => (current ?? []).map((item) => (item.id === id ? buildOptimistic(item) : item)));
 
     try {
@@ -142,7 +174,8 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
       setItems((current) => (current ?? []).map((item) => (item.id === id ? previous : item)));
       toast.error(failureMessage, { description: "Inténtalo de nuevo." });
     } finally {
-      pendingEditIds.current.delete(id);
+      pendingEdits.end(id);
+      invalidateInFlightFetches();
     }
   };
 
@@ -200,7 +233,8 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
       toast.error("No se pudo reordenar la lista", { description: "Inténtalo de nuevo." });
       void fetchItems();
     } finally {
-      for (const id of orderedIds) pendingEditIds.current.delete(id);
+      for (const id of orderedIds) pendingEdits.end(id);
+      invalidateInFlightFetches();
     }
   };
   const persistReorderRef = useRef(persistReorder);
@@ -218,7 +252,7 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
 
   const reorder = async (orderedIds: string[]) => {
     const order = new Map(orderedIds.map((id, index) => [id, index]));
-    for (const id of orderedIds) pendingEditIds.current.add(id);
+    for (const id of orderedIds) pendingEdits.begin(id);
     setItems((current) =>
       (current ?? []).map((item) => (order.has(item.id) ? { ...item, orden: order.get(item.id)! } : item)),
     );
@@ -248,6 +282,7 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
       toast.error("No se pudo eliminar el producto", { description: "Inténtalo de nuevo." });
     } finally {
       pendingDeleteIds.current.delete(id);
+      invalidateInFlightFetches();
     }
   };
 

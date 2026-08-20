@@ -14,6 +14,7 @@ type ChannelEntry = {
 
 const channels = new Map<string, ChannelEntry>();
 const RECONNECT_DELAY_MS = 2000;
+const POLL_FALLBACK_MS = 20000;
 
 function notify(entry: ChannelEntry) {
   for (const handler of entry.handlers) void handler();
@@ -97,7 +98,29 @@ export function useRealtimeList(
     const registeredHandler = () => handlerRef.current();
     entry.handlers.add(registeredHandler);
 
+    // Respaldo además del canal en vivo, no en su lugar: un WebSocket puede
+    // fallar en silencio por razones ajenas a nuestro código (proxy de la
+    // red, extensión del navegador, etc.) y la exigencia aquí es que los
+    // colaboradores vean los cambios "sin necesidad de recargar nada" pase
+    // lo que pase con esa conexión. Un sondeo ocasional, más un refresco
+    // inmediato al volver a la pestaña, garantiza que eso siga siendo
+    // cierto aunque el canal en vivo esté teniendo problemas.
+    const pollInterval = setInterval(() => {
+      if (document.visibilityState === "hidden") return;
+      handlerRef.current();
+    }, POLL_FALLBACK_MS);
+
+    const handleVisible = () => {
+      if (document.visibilityState === "visible") handlerRef.current();
+    };
+    document.addEventListener("visibilitychange", handleVisible);
+    window.addEventListener("focus", handleVisible);
+
     return () => {
+      clearInterval(pollInterval);
+      document.removeEventListener("visibilitychange", handleVisible);
+      window.removeEventListener("focus", handleVisible);
+
       entry.handlers.delete(registeredHandler);
       if (entry.handlers.size > 0) return;
       if (entry.reconnectTimer) clearTimeout(entry.reconnectTimer);

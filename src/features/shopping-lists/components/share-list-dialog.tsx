@@ -44,6 +44,7 @@ export function ShareListDialog({ listId, open, onOpenChange, role, onLeft }: Sh
     invitations,
     isLoadingInvitations,
     removeMember,
+    updateMemberRole,
     revokeInvitation,
     addInvitation,
   } = useListCollaboration(listId, open);
@@ -219,7 +220,21 @@ export function ShareListDialog({ listId, open, onOpenChange, role, onLeft }: Sh
                         {member.email}
                         {member.isSelf && <span className="text-muted-foreground"> (tú)</span>}
                       </p>
-                      <p className="text-muted-foreground text-xs">{ROLE_LABELS[member.role]}</p>
+                      {isOwner && !member.isSelf && member.role !== "OWNER" ? (
+                        <select
+                          aria-label={`Permiso de ${member.email}`}
+                          className="border-input bg-card mt-1 h-8 rounded-lg border px-2 text-xs"
+                          value={member.role}
+                          onChange={(event) =>
+                            updateMemberRole(member.id, event.target.value as "EDITOR" | "VIEWER")
+                          }
+                        >
+                          <option value="EDITOR">Puede editar</option>
+                          <option value="VIEWER">Solo puede ver</option>
+                        </select>
+                      ) : (
+                        <p className="text-muted-foreground text-xs">{ROLE_LABELS[member.role]}</p>
+                      )}
                     </div>
                     {member.role !== "OWNER" && (isOwner || member.isSelf) && (
                       <Button
