@@ -34,7 +34,12 @@ interface NewCategoryDialogProps {
   onCreated: (category: Category) => void;
 }
 
-export function NewCategoryDialog({ open, onOpenChange, onCreate, onCreated }: NewCategoryDialogProps) {
+export function NewCategoryDialog({
+  open,
+  onOpenChange,
+  onCreate,
+  onCreated,
+}: NewCategoryDialogProps) {
   const [nombre, setNombre] = React.useState("");
   const [color, setColor] = React.useState(COLOR_SWATCHES[0]);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -84,7 +89,7 @@ export function NewCategoryDialog({ open, onOpenChange, onCreate, onCreated }: N
                   onClick={() => setColor(swatch)}
                   className={cn(
                     "flex size-10 items-center justify-center rounded-full border-2 transition-transform",
-                    color === swatch ? "scale-110 border-foreground" : "border-transparent",
+                    color === swatch ? "border-foreground scale-110" : "border-transparent",
                   )}
                   style={{ backgroundColor: swatch }}
                 >

@@ -53,7 +53,8 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
 
   const cantidad = Number(watch("cantidad")) || 0;
   const precioUnitario = Number(watch("precioUnitario")) || 0;
-  const total = cantidad > 0 && precioUnitario >= 0 ? calculateItemTotal(cantidad, precioUnitario) : 0;
+  const total =
+    cantidad > 0 && precioUnitario >= 0 ? calculateItemTotal(cantidad, precioUnitario) : 0;
 
   const submit = handleSubmit(async (values) => {
     await onConfirm(values.cantidad, values.precioUnitario);
@@ -65,7 +66,9 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
       <DialogContent className="max-h-[calc(100dvh-0.5rem)] p-4 sm:max-h-[92dvh] sm:p-6">
         <DialogHeader>
           <DialogTitle>{item?.nombre ?? "Producto"}</DialogTitle>
-          <DialogDescription>Ingresa primero el precio unitario y luego la cantidad.</DialogDescription>
+          <DialogDescription>
+            Ingresa primero el precio unitario y luego la cantidad.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-5 pb-1">
           <div className="grid grid-cols-2 gap-3">
@@ -84,7 +87,7 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
                 }}
               />
               {errors.precioUnitario && (
-                <p className="text-xs text-destructive">{errors.precioUnitario.message}</p>
+                <p className="text-destructive text-xs">{errors.precioUnitario.message}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -100,16 +103,18 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
                   if (["e", "E", "+", "-", ".", ","].includes(event.key)) event.preventDefault();
                 }}
               />
-              {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
+              {errors.cantidad && (
+                <p className="text-destructive text-xs">{errors.cantidad.message}</p>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl bg-muted px-4 py-3">
-            <span className="text-sm font-medium text-muted-foreground">Total</span>
+          <div className="bg-muted flex items-center justify-between rounded-xl px-4 py-3">
+            <span className="text-muted-foreground text-sm font-medium">Total</span>
             <span className="tabular font-display text-lg font-bold">{formatCurrency(total)}</span>
           </div>
 
-          <DialogFooter className="sticky bottom-0 z-10 -mx-4 mt-7 bg-card px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
+          <DialogFooter className="bg-card sticky bottom-0 z-10 -mx-4 mt-7 px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
             <Button type="submit" size="lg" disabled={isSubmitting}>
               Marcar como comprado
             </Button>

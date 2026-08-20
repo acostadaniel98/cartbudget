@@ -1,4 +1,3 @@
-
 export interface FrequentProduct {
   id: string;
   nombreNormalizado: string;

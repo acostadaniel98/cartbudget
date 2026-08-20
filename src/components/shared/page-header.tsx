@@ -14,13 +14,19 @@ interface PageHeaderProps {
   className?: string;
 }
 
-export function PageHeader({ title, subtitle, showBack = false, action, className }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  subtitle,
+  showBack = false,
+  action,
+  className,
+}: PageHeaderProps) {
   const router = useRouter();
 
   return (
     <header
       className={cn(
-        "safe-top sticky top-0 z-30 -mx-4 mb-4 flex items-center gap-2 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm",
+        "safe-top border-border bg-background/95 sticky top-0 z-30 -mx-4 mb-4 flex items-center gap-2 border-b px-4 py-3 backdrop-blur-sm",
         className,
       )}
     >
@@ -36,8 +42,8 @@ export function PageHeader({ title, subtitle, showBack = false, action, classNam
         </Button>
       )}
       <div className="min-w-0 flex-1">
-        <h1 className="truncate font-display text-lg font-bold leading-tight">{title}</h1>
-        {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
+        <h1 className="font-display truncate text-lg leading-tight font-bold">{title}</h1>
+        {subtitle && <p className="text-muted-foreground truncate text-xs">{subtitle}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </header>

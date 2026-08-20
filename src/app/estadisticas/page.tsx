@@ -18,7 +18,7 @@ export default function EstadisticasPage() {
     return (
       <div className="px-4 py-6">
         <PageHeader title="Estadísticas" />
-        <p className="text-sm text-muted-foreground">Cargando…</p>
+        <p className="text-muted-foreground text-sm">Cargando…</p>
       </div>
     );
   }
@@ -29,7 +29,11 @@ export default function EstadisticasPage() {
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Compras totales" value={String(stats.totalCompras)} icon={<Receipt />} />
-        <StatCard label="Promedio gastado" value={formatCurrency(stats.promedioGastado)} icon={<DollarSign />} />
+        <StatCard
+          label="Promedio gastado"
+          value={formatCurrency(stats.promedioGastado)}
+          icon={<DollarSign />}
+        />
       </div>
 
       <MonthlyChart data={stats.comprasPorMes} />
@@ -37,7 +41,7 @@ export default function EstadisticasPage() {
       <MostPurchasedList data={stats.productosMasComprados} />
 
       {stats.totalCompras === 0 && (
-        <p className="flex items-center gap-2 rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">
+        <p className="bg-muted text-muted-foreground flex items-center gap-2 rounded-xl px-4 py-3 text-sm">
           <BarChart3 className="size-4 shrink-0" />
           Tus estadísticas aparecerán aquí a medida que completes compras.
         </p>

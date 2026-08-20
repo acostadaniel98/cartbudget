@@ -21,7 +21,10 @@ function DialogClose(props: React.ComponentProps<typeof DialogPrimitive.Close>) 
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+function DialogOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
@@ -48,20 +51,20 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed z-50 bg-card text-card-foreground shadow-2xl",
-          "inset-x-0 bottom-0 rounded-t-3xl border-t border-border p-6 safe-bottom",
+          "bg-card text-card-foreground fixed z-50 shadow-2xl",
+          "border-border safe-bottom inset-x-0 bottom-0 rounded-t-3xl border-t p-6",
           "max-h-[92dvh] overflow-y-auto overscroll-contain",
           "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom",
           "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom",
-          "sm:inset-x-auto sm:top-1/2 sm:left-1/2 sm:bottom-auto sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl sm:border",
+          "sm:inset-x-auto sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-3xl sm:border",
           className,
         )}
         {...props}
       >
-        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-border sm:hidden" aria-hidden />
+        <div className="bg-border mx-auto mb-4 h-1.5 w-10 rounded-full sm:hidden" aria-hidden />
         {children}
         {showCloseButton && (
-          <DialogPrimitive.Close className="absolute top-5 right-5 rounded-full p-1.5 text-muted-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
+          <DialogPrimitive.Close className="text-muted-foreground hover:bg-muted focus-visible:ring-ring absolute top-5 right-5 rounded-full p-1.5 transition-colors outline-none focus-visible:ring-2">
             <X className="size-5" />
             <span className="sr-only">Cerrar</span>
           </DialogPrimitive.Close>
@@ -102,7 +105,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );

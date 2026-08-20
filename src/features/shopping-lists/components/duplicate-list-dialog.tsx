@@ -61,7 +61,12 @@ export function DuplicateListDialog({
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="duplicar-nombre">Nombre de la nueva compra</Label>
-            <Input id="duplicar-nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} autoFocus />
+            <Input
+              id="duplicar-nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              autoFocus
+            />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={!nombre.trim() || isSubmitting}>

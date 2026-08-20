@@ -15,10 +15,7 @@ export interface ProductoMasComprado {
   cantidadTotal: number;
 }
 
-export function getMostPurchasedProducts(
-  items: ShoppingItem[],
-  limit = 10,
-): ProductoMasComprado[] {
+export function getMostPurchasedProducts(items: ShoppingItem[], limit = 10): ProductoMasComprado[] {
   const purchased = items.filter((i) => i.estado === ItemStatus.COMPRADO);
   const map = new Map<string, ProductoMasComprado>();
 
@@ -37,7 +34,9 @@ export function getMostPurchasedProducts(
     }
   }
 
-  return Array.from(map.values()).sort((a, b) => b.vecesComprado - a.vecesComprado).slice(0, limit);
+  return Array.from(map.values())
+    .sort((a, b) => b.vecesComprado - a.vecesComprado)
+    .slice(0, limit);
 }
 
 /** Promedio gastado entre las listas que tienen al menos un producto comprado. */
@@ -55,7 +54,7 @@ export function getAverageSpent(
 }
 
 export interface CompraPorMes {
-  mes: string; 
+  mes: string;
   cantidad: number;
 }
 
@@ -96,10 +95,7 @@ export interface CategoriaMasUtilizada {
   vecesUtilizada: number;
 }
 
-export function getMostUsedCategories(
-  items: ShoppingItem[],
-  limit = 5,
-): CategoriaMasUtilizada[] {
+export function getMostUsedCategories(items: ShoppingItem[], limit = 5): CategoriaMasUtilizada[] {
   const map = new Map<string, number>();
   for (const item of items) {
     map.set(item.categoria, (map.get(item.categoria) ?? 0) + 1);

@@ -21,7 +21,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur-sm"
+      className="safe-bottom border-border bg-card/95 fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-sm"
       aria-label="Navegación principal"
     >
       <ul className="mx-auto flex max-w-3xl items-stretch justify-between px-2">
@@ -35,7 +35,7 @@ export function BottomNav() {
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-[56px] flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors",
+                  "flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >

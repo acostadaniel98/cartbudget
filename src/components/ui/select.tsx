@@ -22,8 +22,8 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-12 w-full items-center justify-between gap-2 rounded-xl border border-input bg-card px-4 py-2 text-base text-foreground shadow-sm outline-none",
-        "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
+        "border-input bg-card text-foreground flex h-12 w-full items-center justify-between gap-2 rounded-xl border px-4 py-2 text-base shadow-sm outline-none",
+        "focus-visible:border-ring focus-visible:ring-ring/30 focus-visible:ring-2",
         "data-placeholder:text-muted-foreground",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className,
@@ -32,7 +32,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+        <ChevronDown className="text-muted-foreground size-4 shrink-0" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -50,11 +50,11 @@ function SelectContent({
         data-slot="select-content"
         position={position}
         className={cn(
-          "z-50 max-h-72 min-w-32 overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-lg",
+          "border-border bg-popover text-popover-foreground z-50 max-h-72 min-w-32 overflow-y-auto rounded-xl border shadow-lg",
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1 w-(--radix-select-trigger-width)",
+            "w-(--radix-select-trigger-width) data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
           className,
         )}
         {...props}
@@ -83,7 +83,7 @@ function SelectItem({
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
       <span className="absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <Check className="size-4 text-primary" />
+          <Check className="text-primary size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
     </SelectPrimitive.Item>

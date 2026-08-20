@@ -46,9 +46,30 @@ describe("bumpFrequency", () => {
 
 describe("getSuggestions", () => {
   const products: FrequentProduct[] = [
-    { id: "1", nombreNormalizado: "leche entera", nombre: "Leche Entera", categoria: "lacteos", frecuencia: 5, fechaActualizacion: 1 },
-    { id: "2", nombreNormalizado: "leche deslactosada", nombre: "Leche Deslactosada", categoria: "lacteos", frecuencia: 8, fechaActualizacion: 1 },
-    { id: "3", nombreNormalizado: "pan integral", nombre: "Pan Integral", categoria: "panaderia", frecuencia: 10, fechaActualizacion: 1 },
+    {
+      id: "1",
+      nombreNormalizado: "leche entera",
+      nombre: "Leche Entera",
+      categoria: "lacteos",
+      frecuencia: 5,
+      fechaActualizacion: 1,
+    },
+    {
+      id: "2",
+      nombreNormalizado: "leche deslactosada",
+      nombre: "Leche Deslactosada",
+      categoria: "lacteos",
+      frecuencia: 8,
+      fechaActualizacion: 1,
+    },
+    {
+      id: "3",
+      nombreNormalizado: "pan integral",
+      nombre: "Pan Integral",
+      categoria: "panaderia",
+      frecuencia: 10,
+      fechaActualizacion: 1,
+    },
   ];
 
   it("sin query, ordena por frecuencia descendente", () => {

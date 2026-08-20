@@ -1,7 +1,10 @@
 "use client";
 
 import { Reorder } from "framer-motion";
-import { ReorderableProductItem, StaticProductItem } from "@/features/shopping-items/components/product-item-row";
+import {
+  ReorderableProductItem,
+  StaticProductItem,
+} from "@/features/shopping-items/components/product-item-row";
 import { ItemStatus } from "@/domain/models/item-status";
 import type { ShoppingItem } from "@/domain/models/shopping-item";
 import type { Category } from "@/domain/models/category";
@@ -26,7 +29,9 @@ export function ProductList({
   onMarkNotFound,
 }: ProductListProps) {
   const categoryById = new Map(categories.map((c) => [c.id, c]));
-  const pendientes = items.filter((i) => i.estado === ItemStatus.PENDIENTE).sort((a, b) => a.orden - b.orden);
+  const pendientes = items
+    .filter((i) => i.estado === ItemStatus.PENDIENTE)
+    .sort((a, b) => a.orden - b.orden);
   const resueltos = items
     .filter((i) => i.estado !== ItemStatus.PENDIENTE)
     .sort((a, b) => (b.fechaCompra ?? 0) - (a.fechaCompra ?? 0));
@@ -59,7 +64,10 @@ export function ProductList({
                   index > 0
                     ? () => {
                         const nextOrder = [...pendientes];
-                        [nextOrder[index - 1], nextOrder[index]] = [nextOrder[index], nextOrder[index - 1]];
+                        [nextOrder[index - 1], nextOrder[index]] = [
+                          nextOrder[index],
+                          nextOrder[index - 1],
+                        ];
                         onReorderPending(nextOrder.map((product) => product.id));
                       }
                     : undefined
@@ -68,7 +76,10 @@ export function ProductList({
                   index < pendientes.length - 1
                     ? () => {
                         const nextOrder = [...pendientes];
-                        [nextOrder[index], nextOrder[index + 1]] = [nextOrder[index + 1], nextOrder[index]];
+                        [nextOrder[index], nextOrder[index + 1]] = [
+                          nextOrder[index + 1],
+                          nextOrder[index],
+                        ];
                         onReorderPending(nextOrder.map((product) => product.id));
                       }
                     : undefined
@@ -81,7 +92,7 @@ export function ProductList({
 
       {resueltos.length > 0 && (
         <div className="space-y-2">
-          <p className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <p className="text-muted-foreground px-1 text-xs font-semibold tracking-wide uppercase">
             Ya resueltos
           </p>
           <div className="space-y-2 opacity-80">

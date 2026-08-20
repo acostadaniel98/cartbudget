@@ -21,7 +21,11 @@ import { PurchaseDialog } from "@/features/shopping-items/components/purchase-di
 import { useCategories } from "@/features/categories/hooks/use-categories";
 import { ItemStatus } from "@/domain/models/item-status";
 import { UNCATEGORIZED_ID } from "@/constants/categories";
-import type { ShoppingItem, CreateShoppingItemInput, UpdateShoppingItemInput } from "@/domain/models/shopping-item";
+import type {
+  ShoppingItem,
+  CreateShoppingItemInput,
+  UpdateShoppingItemInput,
+} from "@/domain/models/shopping-item";
 
 interface ShoppingItemManagerProps {
   items: ShoppingItem[];
@@ -146,7 +150,10 @@ export function ShoppingItemManager({
         }}
       />
 
-      <AlertDialog open={deletingItem !== null} onOpenChange={(open) => !open && setDeletingItem(null)}>
+      <AlertDialog
+        open={deletingItem !== null}
+        onOpenChange={(open) => !open && setDeletingItem(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar {deletingItem?.nombre}?</AlertDialogTitle>

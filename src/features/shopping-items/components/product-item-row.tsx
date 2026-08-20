@@ -63,7 +63,7 @@ function ProductItemRowContent({
             onMarkNotFound();
           }}
           style={{ width: ACTION_WIDTH }}
-          className="flex flex-col items-center justify-center gap-1 bg-warning text-accent-foreground text-[11px] font-medium"
+          className="bg-warning text-accent-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
         >
           <SearchX className="size-4" />
           Agotado
@@ -76,7 +76,7 @@ function ProductItemRowContent({
             onEdit();
           }}
           style={{ width: ACTION_WIDTH }}
-          className="flex flex-col items-center justify-center gap-1 bg-secondary text-secondary-foreground text-[11px] font-medium"
+          className="bg-secondary text-secondary-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
         >
           <Pencil className="size-4" />
           Editar
@@ -89,7 +89,7 @@ function ProductItemRowContent({
             onDelete();
           }}
           style={{ width: ACTION_WIDTH }}
-          className="flex flex-col items-center justify-center gap-1 bg-destructive text-destructive-foreground text-[11px] font-medium"
+          className="bg-destructive text-destructive-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
         >
           <Trash2 className="size-4" />
           Eliminar
@@ -105,7 +105,7 @@ function ProductItemRowContent({
         onDragEnd={(_, info) => {
           swipeControls.start({ x: info.offset.x < -60 ? OPEN_X : 0 });
         }}
-        className="relative z-10 flex items-center gap-3 rounded-2xl border border-border bg-card px-3 py-3 shadow-sm touch-pan-y"
+        className="border-border bg-card relative z-10 flex touch-pan-y items-center gap-3 rounded-2xl border px-3 py-3 shadow-sm"
       >
         {dragControls && (
           <button
@@ -114,13 +114,17 @@ function ProductItemRowContent({
             data-tap-ignore
             onPointerDown={(e) => dragControls.start(e)}
             onClick={(e) => e.stopPropagation()}
-            className="flex size-8 shrink-0 cursor-grab touch-none items-center justify-center text-muted-foreground active:cursor-grabbing"
+            className="text-muted-foreground flex size-8 shrink-0 cursor-grab touch-none items-center justify-center active:cursor-grabbing"
           >
             <GripVertical className="size-5" />
           </button>
         )}
 
-        <div data-tap-ignore onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+        <div
+          data-tap-ignore
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           <Checkbox
             checked={isPurchased}
             onCheckedChange={onToggle}
@@ -138,11 +142,11 @@ function ProductItemRowContent({
           >
             {item.nombre}
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
             {Icon && <Icon className="size-3.5" style={{ color: category?.color }} />}
             <span className="tabular">{item.cantidad}</span>
             {isNotFound && (
-              <span className="flex items-center gap-1 text-warning">
+              <span className="text-warning flex items-center gap-1">
                 <SearchX className="size-3.5" /> No encontrado
               </span>
             )}
@@ -150,7 +154,9 @@ function ProductItemRowContent({
         </div>
 
         {isPurchased && (
-          <span className="tabular shrink-0 text-sm font-semibold">{formatCurrency(item.precioTotal)}</span>
+          <span className="tabular shrink-0 text-sm font-semibold">
+            {formatCurrency(item.precioTotal)}
+          </span>
         )}
 
         <DropdownMenu>

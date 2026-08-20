@@ -52,7 +52,7 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
           autoFocus
           {...register("nombre")}
         />
-        {errors.nombre && <p className="text-xs text-destructive">{errors.nombre.message}</p>}
+        {errors.nombre && <p className="text-destructive text-xs">{errors.nombre.message}</p>}
       </div>
 
       <div className="space-y-1.5">
@@ -70,8 +70,10 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
             if (["e", "E", "+", "-"].includes(event.key)) event.preventDefault();
           }}
         />
-        {errors.presupuesto && <p className="text-xs text-destructive">{errors.presupuesto.message}</p>}
-        <p id="lista-presupuesto-ayuda" className="text-xs text-muted-foreground">
+        {errors.presupuesto && (
+          <p className="text-destructive text-xs">{errors.presupuesto.message}</p>
+        )}
+        <p id="lista-presupuesto-ayuda" className="text-muted-foreground text-xs">
           Si lo dejas vacío, solo veremos cuánto llevas gastado, sin restante ni porcentaje.
         </p>
       </div>
@@ -85,7 +87,7 @@ export function ShoppingListForm({ defaultValues, onValuesChange, formId }: Shop
           placeholder="Ej. Comprar en la tienda del barrio"
           {...register("notas")}
         />
-        {errors.notas && <p className="text-xs text-destructive">{errors.notas.message}</p>}
+        {errors.notas && <p className="text-destructive text-xs">{errors.notas.message}</p>}
       </div>
     </form>
   );

@@ -96,7 +96,7 @@ export function ProductFormDialog({
               }}
               autoFocus={mode === "create"}
             />
-            {errors.nombre && <p className="text-xs text-destructive">{errors.nombre.message}</p>}
+            {errors.nombre && <p className="text-destructive text-xs">{errors.nombre.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -113,7 +113,9 @@ export function ProductFormDialog({
                   if (["e", "E", "+", "-", ".", ","].includes(event.key)) event.preventDefault();
                 }}
               />
-              {errors.cantidad && <p className="text-xs text-destructive">{errors.cantidad.message}</p>}
+              {errors.cantidad && (
+                <p className="text-destructive text-xs">{errors.cantidad.message}</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label>Categoría</Label>
@@ -134,7 +136,7 @@ export function ProductFormDialog({
             />
           </div>
 
-          <DialogFooter className="sticky bottom-0 z-10 -mx-4 mt-7 bg-card px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
+          <DialogFooter className="bg-card sticky bottom-0 z-10 -mx-4 mt-7 px-4 pt-3 pb-[env(safe-area-inset-bottom)] sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0">
             <Button type="submit" size="lg" disabled={isSubmitting}>
               {mode === "create" ? "Agregar" : "Guardar cambios"}
             </Button>

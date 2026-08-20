@@ -17,14 +17,20 @@ import { SITE_CONFIG } from "@/config/site";
 function DashboardSkeleton() {
   return (
     <div className="space-y-3" aria-label="Cargando compras" role="status">
-      <div className="h-5 w-32 animate-pulse rounded-lg bg-muted" />
-      <div className="h-28 animate-pulse rounded-2xl bg-muted" />
+      <div className="bg-muted h-5 w-32 animate-pulse rounded-lg" />
+      <div className="bg-muted h-28 animate-pulse rounded-2xl" />
       <span className="sr-only">Cargando compras</span>
     </div>
   );
 }
 
-function ActiveListSummary({ listId, presupuesto }: { listId: string; presupuesto: number | undefined }) {
+function ActiveListSummary({
+  listId,
+  presupuesto,
+}: {
+  listId: string;
+  presupuesto: number | undefined;
+}) {
   const { summary } = useListSummary(listId, presupuesto);
   return <BudgetSummary summary={summary} />;
 }
@@ -39,7 +45,7 @@ export default function DashboardPage() {
     <div className="space-y-6 px-4 pb-6">
       <header className="flex items-center justify-between pt-2">
         <div>
-          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
             {SITE_CONFIG.nombre}
           </p>
           <h1 className="font-display text-2xl font-extrabold">¿Qué vamos a comprar?</h1>
@@ -56,7 +62,10 @@ export default function DashboardPage() {
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="font-display font-bold">Compra activa</h2>
-            <Link href={ROUTES.compra(activeList.id)} className="text-sm font-semibold text-primary">
+            <Link
+              href={ROUTES.compra(activeList.id)}
+              className="text-primary text-sm font-semibold"
+            >
               Continuar →
             </Link>
           </div>
@@ -81,8 +90,8 @@ export default function DashboardPage() {
 
         {isLoadingRecent && (
           <div className="space-y-2" aria-hidden="true">
-            <div className="h-20 animate-pulse rounded-2xl bg-muted" />
-            <div className="h-20 animate-pulse rounded-2xl bg-muted" />
+            <div className="bg-muted h-20 animate-pulse rounded-2xl" />
+            <div className="bg-muted h-20 animate-pulse rounded-2xl" />
           </div>
         )}
 

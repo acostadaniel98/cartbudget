@@ -19,7 +19,9 @@ export function CategoryBreakdown({ data, categories }: CategoryBreakdownProps) 
         <CardTitle>Gasto por categoría</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {data.length === 0 && <p className="text-sm text-muted-foreground">Aún no hay compras registradas.</p>}
+        {data.length === 0 && (
+          <p className="text-muted-foreground text-sm">Aún no hay compras registradas.</p>
+        )}
         {data.map((entry) => {
           const category = categoryById.get(entry.categoria);
           const Icon = category ? getCategoryIcon(category.icono) : undefined;
@@ -33,10 +35,13 @@ export function CategoryBreakdown({ data, categories }: CategoryBreakdownProps) 
                 </span>
                 <span className="tabular text-muted-foreground">{formatCurrency(entry.total)}</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${width}%`, backgroundColor: category?.color ?? "var(--primary)" }}
+                  style={{
+                    width: `${width}%`,
+                    backgroundColor: category?.color ?? "var(--primary)",
+                  }}
                 />
               </div>
             </div>

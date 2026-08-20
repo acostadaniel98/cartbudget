@@ -52,38 +52,38 @@ export function ProductAutocomplete({
           onChange(e.target.value);
           setIsOpen(true);
         }}
-          onKeyDown={(event) => {
-            if (!showSuggestions) return;
-            if (event.key === "ArrowDown") {
-              event.preventDefault();
-              setActiveIndex((index) => Math.min(index + 1, suggestions.length - 1));
-            } else if (event.key === "ArrowUp") {
-              event.preventDefault();
-              setActiveIndex((index) => Math.max(index - 1, 0));
-            } else if (event.key === "Enter") {
-              event.preventDefault();
-              onSelectSuggestion(suggestions[activeIndex]);
-              setIsOpen(false);
-            } else if (event.key === "Escape") {
-              event.preventDefault();
-              setIsOpen(false);
-            }
-          }}
+        onKeyDown={(event) => {
+          if (!showSuggestions) return;
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+            setActiveIndex((index) => Math.min(index + 1, suggestions.length - 1));
+          } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            setActiveIndex((index) => Math.max(index - 1, 0));
+          } else if (event.key === "Enter") {
+            event.preventDefault();
+            onSelectSuggestion(suggestions[activeIndex]);
+            setIsOpen(false);
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            setIsOpen(false);
+          }
+        }}
         onFocus={() => setIsOpen(true)}
         placeholder={placeholder}
         autoFocus={autoFocus}
         autoComplete="off"
         aria-autocomplete="list"
         aria-expanded={showSuggestions}
-          aria-controls={showSuggestions ? listboxId : undefined}
-          aria-activedescendant={showSuggestions ? `${listboxId}-${activeIndex}` : undefined}
+        aria-controls={showSuggestions ? listboxId : undefined}
+        aria-activedescendant={showSuggestions ? `${listboxId}-${activeIndex}` : undefined}
       />
       {showSuggestions && (
         <ul
-            id={listboxId}
+          id={listboxId}
           role="listbox"
           className={cn(
-            "absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border bg-popover shadow-lg",
+            "border-border bg-popover absolute z-20 mt-1.5 w-full overflow-hidden rounded-xl border shadow-lg",
           )}
         >
           {suggestions.map((product, index) => (
@@ -97,9 +97,9 @@ export function ProductAutocomplete({
                   onSelectSuggestion(product);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm transition-colors hover:bg-muted active:bg-muted"
+                className="hover:bg-muted active:bg-muted flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm transition-colors"
               >
-                <Clock className="size-4 shrink-0 text-muted-foreground" />
+                <Clock className="text-muted-foreground size-4 shrink-0" />
                 <span className="flex-1 truncate font-medium">{product.nombre}</span>
               </button>
             </li>

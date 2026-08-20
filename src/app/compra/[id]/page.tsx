@@ -51,13 +51,13 @@ export default function CompraDetailPage() {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   if (isLoading) {
-    return <div className="px-4 py-6 text-sm text-muted-foreground">Cargando…</div>;
+    return <div className="text-muted-foreground px-4 py-6 text-sm">Cargando…</div>;
   }
 
   if (!list) {
     return (
       <div className="px-4 py-6">
-        <p className="text-sm text-muted-foreground">Esta compra ya no existe.</p>
+        <p className="text-muted-foreground text-sm">Esta compra ya no existe.</p>
       </div>
     );
   }

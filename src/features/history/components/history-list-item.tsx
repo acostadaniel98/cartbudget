@@ -36,16 +36,20 @@ export function HistoryListItem({ list }: { list: ShoppingList }) {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   return (
-    <div className="flex items-center gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <div className="border-border bg-card flex items-center gap-2 rounded-2xl border p-4 shadow-sm">
       <Link href={ROUTES.compra(list.id)} className="min-w-0 flex-1">
-        <p className="truncate font-display font-bold">{list.nombre}</p>
-        <p className="text-xs text-muted-foreground">{formatDate(list.fechaCreacion)}</p>
+        <p className="font-display truncate font-bold">{list.nombre}</p>
+        <p className="text-muted-foreground text-xs">{formatDate(list.fechaCreacion)}</p>
         <div className="mt-1.5 flex items-center gap-2 text-sm">
           <span className="tabular font-semibold">{formatCurrency(summary.gastado)}</span>
           {summary.presupuesto !== undefined && (
-            <span className="text-xs text-muted-foreground">de {formatCurrency(summary.presupuesto)}</span>
+            <span className="text-muted-foreground text-xs">
+              de {formatCurrency(summary.presupuesto)}
+            </span>
           )}
-          <span className="text-xs text-muted-foreground">· {summary.totalProductos} productos</span>
+          <span className="text-muted-foreground text-xs">
+            · {summary.totalProductos} productos
+          </span>
         </div>
       </Link>
 

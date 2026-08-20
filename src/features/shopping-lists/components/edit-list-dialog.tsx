@@ -67,7 +67,7 @@ export function EditListDialog({ open, onOpenChange, list, onSave }: EditListDia
           <div className="space-y-1.5">
             <Label htmlFor="editar-nombre">Nombre</Label>
             <Input id="editar-nombre" autoFocus {...register("nombre")} />
-            {errors.nombre && <p className="text-xs text-destructive">{errors.nombre.message}</p>}
+            {errors.nombre && <p className="text-destructive text-xs">{errors.nombre.message}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="editar-presupuesto">Presupuesto (opcional)</Label>
@@ -80,7 +80,9 @@ export function EditListDialog({ open, onOpenChange, list, onSave }: EditListDia
               placeholder="$0.00"
               {...register("presupuesto")}
             />
-            {errors.presupuesto && <p className="text-xs text-destructive">{errors.presupuesto.message}</p>}
+            {errors.presupuesto && (
+              <p className="text-destructive text-xs">{errors.presupuesto.message}</p>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

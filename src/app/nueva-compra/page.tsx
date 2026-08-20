@@ -31,10 +31,13 @@ function NuevaCompraForm() {
 
   const canSave = isListValid && listValues.nombre?.trim().length > 0 && !isSaving;
 
-  const handleListValuesChange = React.useCallback((values: ShoppingListFormValues, valid: boolean) => {
-    setListValues(values);
-    setIsListValid(valid);
-  }, []);
+  const handleListValuesChange = React.useCallback(
+    (values: ShoppingListFormValues, valid: boolean) => {
+      setListValues(values);
+      setIsListValid(valid);
+    },
+    [],
+  );
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -45,16 +48,19 @@ function NuevaCompraForm() {
           ? undefined
           : Number(listValues.presupuesto);
 
-      const { list: newList } = await shoppingListService.createWithItems({
-        nombre: listValues.nombre.trim(),
-        presupuesto: presupuestoValue,
-        notas: listValues.notas?.trim() || undefined,
-        esPlantilla,
-      }, products.map((p) => ({
-        nombre: p.nombre,
-        cantidad: p.cantidad,
-        categoria: p.categoria,
-      })));
+      const { list: newList } = await shoppingListService.createWithItems(
+        {
+          nombre: listValues.nombre.trim(),
+          presupuesto: presupuestoValue,
+          notas: listValues.notas?.trim() || undefined,
+          esPlantilla,
+        },
+        products.map((p) => ({
+          nombre: p.nombre,
+          cantidad: p.cantidad,
+          categoria: p.categoria,
+        })),
+      );
 
       toast.success(esPlantilla ? "Plantilla creada" : "Compra creada");
       router.push(ROUTES.compra(newList.id));
@@ -72,18 +78,19 @@ function NuevaCompraForm() {
       <PageHeader title={esPlantilla ? "Nueva plantilla" : "Nueva compra"} showBack />
 
       <div className="space-y-6 px-4">
-        <ShoppingListForm
-          formId="nueva-compra-form"
-          onValuesChange={handleListValuesChange}
-        />
+        <ShoppingListForm formId="nueva-compra-form" onValuesChange={handleListValuesChange} />
 
         <div>
-          <h2 className="mb-2 font-display font-bold">Productos</h2>
-          <QuickAddProducts value={products} onChange={setProducts} defaultCategoryId={UNCATEGORIZED_ID} />
+          <h2 className="font-display mb-2 font-bold">Productos</h2>
+          <QuickAddProducts
+            value={products}
+            onChange={setProducts}
+            defaultCategoryId={UNCATEGORIZED_ID}
+          />
         </div>
       </div>
 
-      <div className="safe-bottom fixed inset-x-0 bottom-0 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-sm">
+      <div className="safe-bottom border-border bg-background/95 fixed inset-x-0 bottom-0 border-t px-4 py-3 backdrop-blur-sm">
         <Button className="w-full" size="lg" disabled={!canSave} onClick={handleSave}>
           {esPlantilla ? "Guardar plantilla" : "Guardar compra"}
         </Button>

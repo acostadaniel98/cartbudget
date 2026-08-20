@@ -33,10 +33,7 @@ export function calculateSpent(items: ShoppingItem[]): number {
  * Dinero restante = presupuesto − gastado.
  * Si no existe presupuesto, retorna `null` (la UI no debe mostrar restante).
  */
-export function calculateRemaining(
-  presupuesto: number | undefined,
-  spent: number,
-): number | null {
+export function calculateRemaining(presupuesto: number | undefined, spent: number): number | null {
   if (presupuesto === undefined || presupuesto === null) return null;
   return roundCurrency(presupuesto - spent);
 }

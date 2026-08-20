@@ -44,7 +44,9 @@ export function formatRelativeDay(timestamp: number): string {
   const now = new Date();
   const date = new Date(timestamp);
   const isSameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
 
   if (isSameDay(now, date)) return "Hoy";
 

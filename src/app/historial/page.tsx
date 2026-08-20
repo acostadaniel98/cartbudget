@@ -23,8 +23,8 @@ export default function HistorialPage() {
 
       {isLoading && (
         <div className="space-y-2" role="status" aria-label="Cargando historial">
-          <div className="h-20 animate-pulse rounded-2xl bg-muted" />
-          <div className="h-20 animate-pulse rounded-2xl bg-muted" />
+          <div className="bg-muted h-20 animate-pulse rounded-2xl" />
+          <div className="bg-muted h-20 animate-pulse rounded-2xl" />
           <span className="sr-only">Cargando historial</span>
         </div>
       )}

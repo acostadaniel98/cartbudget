@@ -6,6 +6,7 @@ import { DatabaseBootstrap } from "@/components/shared/database-bootstrap";
 import { OfflineBanner } from "@/components/shared/offline-banner";
 import { BottomNav } from "@/components/shared/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
+import { FloatingCalculator } from "@/components/shared/floating-calculator";
 import { SITE_CONFIG } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <OfflineBanner />
           <div className="mx-auto min-h-dvh max-w-3xl pb-20">{children}</div>
           <BottomNav />
+          <FloatingCalculator />
           <Toaster />
         </ThemeProvider>
       </body>

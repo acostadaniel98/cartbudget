@@ -2,7 +2,13 @@
 
 import * as React from "react";
 import { Plus } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useCategories } from "@/features/categories/hooks/use-categories";
 import { NewCategoryDialog } from "@/features/categories/components/new-category-dialog";

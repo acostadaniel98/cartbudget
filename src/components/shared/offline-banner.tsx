@@ -11,7 +11,7 @@ export function OfflineBanner() {
   if (!mounted || isOnline) return null;
 
   return (
-    <div className="safe-top flex items-center justify-center gap-1.5 bg-secondary px-4 py-1.5 text-center text-xs font-medium text-secondary-foreground">
+    <div className="safe-top bg-secondary text-secondary-foreground flex items-center justify-center gap-1.5 px-4 py-1.5 text-center text-xs font-medium">
       <WifiOff className="size-3.5" />
       Sin conexión — tus cambios se guardan igual en este dispositivo
     </div>

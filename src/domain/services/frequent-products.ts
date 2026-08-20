@@ -1,7 +1,4 @@
-import {
-  type FrequentProduct,
-  normalizeProductName,
-} from "@/domain/models/frequent-product";
+import { type FrequentProduct, normalizeProductName } from "@/domain/models/frequent-product";
 
 /**
  * Lógica de aprendizaje local de productos frecuentes.

@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { shoppingItemService } from "@/services/shopping-item-service";
 import { useMounted } from "@/hooks/use-mounted";
 import { summarizeBudget } from "@/domain/services/budget-calculator";
-import type { CreateShoppingItemInput, UpdateShoppingItemInput } from "@/domain/models/shopping-item";
+import type {
+  CreateShoppingItemInput,
+  UpdateShoppingItemInput,
+} from "@/domain/models/shopping-item";
 
 export function useShoppingItems(shoppingListId: string, presupuesto: number | undefined) {
   const mounted = useMounted();
@@ -18,7 +21,10 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
 
   const resolvedItems = useMemo(() => items ?? [], [items]);
 
-  const summary = useMemo(() => summarizeBudget(presupuesto, resolvedItems), [presupuesto, resolvedItems]);
+  const summary = useMemo(
+    () => summarizeBudget(presupuesto, resolvedItems),
+    [presupuesto, resolvedItems],
+  );
 
   const runMutation = async (operation: () => Promise<unknown>, message: string) => {
     try {
@@ -29,7 +35,10 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
   };
 
   const addItem = async (input: Omit<CreateShoppingItemInput, "shoppingListId">) => {
-    await runMutation(() => shoppingItemService.add({ ...input, shoppingListId }), "No se pudo agregar el producto");
+    await runMutation(
+      () => shoppingItemService.add({ ...input, shoppingListId }),
+      "No se pudo agregar el producto",
+    );
   };
 
   const addItems = async (inputs: Omit<CreateShoppingItemInput, "shoppingListId">[]) => {
@@ -41,7 +50,10 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
   };
 
   const updateItem = async (id: string, patch: UpdateShoppingItemInput) => {
-    await runMutation(() => shoppingItemService.update(id, patch), "No se pudo actualizar el producto");
+    await runMutation(
+      () => shoppingItemService.update(id, patch),
+      "No se pudo actualizar el producto",
+    );
   };
 
   const markPurchased = async (id: string, cantidad: number, precioUnitario: number) => {
@@ -52,11 +64,17 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
   };
 
   const markNotFound = async (id: string) => {
-    await runMutation(() => shoppingItemService.markNotFound(id), "No se pudo actualizar el producto");
+    await runMutation(
+      () => shoppingItemService.markNotFound(id),
+      "No se pudo actualizar el producto",
+    );
   };
 
   const markPending = async (id: string) => {
-    await runMutation(() => shoppingItemService.markPending(id), "No se pudo actualizar el producto");
+    await runMutation(
+      () => shoppingItemService.markPending(id),
+      "No se pudo actualizar el producto",
+    );
   };
 
   const reorder = async (orderedIds: string[]) => {

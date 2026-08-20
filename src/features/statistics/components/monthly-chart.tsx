@@ -13,17 +13,17 @@ export function MonthlyChart({ data }: { data: CompraPorMes[] }) {
       </CardHeader>
       <CardContent>
         {recent.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aún no hay compras registradas.</p>
+          <p className="text-muted-foreground text-sm">Aún no hay compras registradas.</p>
         ) : (
           <div className="flex h-32 items-end gap-3">
             {recent.map((entry) => (
               <div key={entry.mes} className="flex flex-1 flex-col items-center gap-1.5">
                 <span className="tabular text-xs font-semibold">{entry.cantidad}</span>
                 <div
-                  className="w-full rounded-t-md bg-primary"
+                  className="bg-primary w-full rounded-t-md"
                   style={{ height: `${Math.max(6, (entry.cantidad / max) * 100)}%` }}
                 />
-                <span className="text-[10px] whitespace-nowrap text-muted-foreground capitalize">
+                <span className="text-muted-foreground text-[10px] whitespace-nowrap capitalize">
                   {formatMonthLabel(entry.mes).split(" ")[0].slice(0, 3)}
                 </span>
               </div>

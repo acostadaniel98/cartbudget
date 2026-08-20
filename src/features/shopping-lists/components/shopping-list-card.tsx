@@ -21,12 +21,12 @@ export function ShoppingListCard({ list }: ShoppingListCardProps) {
   return (
     <Link
       href={ROUTES.compra(list.id)}
-      className="block rounded-2xl border border-border bg-card p-4 shadow-sm transition-transform active:scale-[0.98]"
+      className="border-border bg-card block rounded-2xl border p-4 shadow-sm transition-transform active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-display font-bold">{list.nombre}</p>
-          <p className="text-xs text-muted-foreground">{formatRelativeDay(list.fechaCreacion)}</p>
+          <p className="font-display truncate font-bold">{list.nombre}</p>
+          <p className="text-muted-foreground text-xs">{formatRelativeDay(list.fechaCreacion)}</p>
         </div>
         {isDone && (
           <Badge>
@@ -38,15 +38,26 @@ export function ShoppingListCard({ list }: ShoppingListCardProps) {
       <div className="mt-3 flex items-center justify-between text-sm">
         <span className="tabular font-semibold">
           {formatCurrency(summary.gastado)}
-          {hasBudget && <span className="font-normal text-muted-foreground"> / {formatCurrency(list.presupuesto!)}</span>}
+          {hasBudget && (
+            <span className="text-muted-foreground font-normal">
+              {" "}
+              / {formatCurrency(list.presupuesto!)}
+            </span>
+          )}
         </span>
-        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+        <span className="text-muted-foreground flex items-center gap-1 text-xs">
           <CircleDashed className="size-3.5" />
           {summary.pendientes} pendientes
         </span>
       </div>
 
-      {hasBudget && <Progress value={summary.porcentaje ?? 0} className="mt-2" indicatorClassName={summary.sobrePresupuesto ? "bg-destructive" : "bg-primary"} />}
+      {hasBudget && (
+        <Progress
+          value={summary.porcentaje ?? 0}
+          className="mt-2"
+          indicatorClassName={summary.sobrePresupuesto ? "bg-destructive" : "bg-primary"}
+        />
+      )}
     </Link>
   );
 }

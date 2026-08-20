@@ -28,14 +28,14 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <div className="border-border bg-card rounded-2xl border p-4 shadow-sm">
       <div className="flex items-start gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent-foreground">
+        <div className="bg-accent/15 text-accent-foreground flex size-10 shrink-0 items-center justify-center rounded-xl">
           <LayoutTemplate className="size-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-display font-bold">{template.nombre}</p>
-          <p className="text-xs text-muted-foreground">{summary.totalProductos} productos</p>
+          <p className="font-display truncate font-bold">{template.nombre}</p>
+          <p className="text-muted-foreground text-xs">{summary.totalProductos} productos</p>
         </div>
       </div>
 
@@ -43,7 +43,12 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
         <Button className="flex-1" onClick={() => setIsUseOpen(true)}>
           <Play /> Usar plantilla
         </Button>
-        <Button variant="outline" size="icon" aria-label="Eliminar plantilla" onClick={() => setIsDeleteOpen(true)}>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Eliminar plantilla"
+          onClick={() => setIsDeleteOpen(true)}
+        >
           <Trash2 />
         </Button>
       </div>
@@ -65,7 +70,9 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar la plantilla &ldquo;{template.nombre}&rdquo;?</AlertDialogTitle>
+            <AlertDialogTitle>
+              ¿Eliminar la plantilla &ldquo;{template.nombre}&rdquo;?
+            </AlertDialogTitle>
             <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

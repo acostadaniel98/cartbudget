@@ -98,7 +98,7 @@ export function QuickAddProducts({ value, onChange, defaultCategoryId }: QuickAd
             return (
               <li
                 key={item.tempId}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5"
+                className="border-border bg-card flex items-center gap-3 rounded-xl border px-3 py-2.5"
               >
                 {Icon && <Icon className="size-4 shrink-0" style={{ color: category?.color }} />}
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.nombre}</span>
@@ -107,16 +107,18 @@ export function QuickAddProducts({ value, onChange, defaultCategoryId }: QuickAd
                     type="button"
                     aria-label="Quitar uno"
                     onClick={() => updateCantidad(item.tempId, -1)}
-                    className="flex size-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
+                    className="bg-muted text-muted-foreground flex size-7 items-center justify-center rounded-full"
                   >
                     –
                   </button>
-                  <span className="tabular w-5 text-center text-sm font-semibold">{item.cantidad}</span>
+                  <span className="tabular w-5 text-center text-sm font-semibold">
+                    {item.cantidad}
+                  </span>
                   <button
                     type="button"
                     aria-label="Agregar uno"
                     onClick={() => updateCantidad(item.tempId, 1)}
-                    className="flex size-7 items-center justify-center rounded-full bg-muted text-muted-foreground"
+                    className="bg-muted text-muted-foreground flex size-7 items-center justify-center rounded-full"
                   >
                     +
                   </button>
@@ -125,7 +127,7 @@ export function QuickAddProducts({ value, onChange, defaultCategoryId }: QuickAd
                   type="button"
                   aria-label={`Quitar ${item.nombre}`}
                   onClick={() => removeItem(item.tempId)}
-                  className="shrink-0 text-muted-foreground"
+                  className="text-muted-foreground shrink-0"
                 >
                   <X className="size-4" />
                 </button>
