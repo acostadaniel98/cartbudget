@@ -31,7 +31,7 @@ export function useShoppingList(id: string) {
   useRealtimeList(id, async () => {
     const data = await apiFetch<ListDetail>(`/api/v1/lists/${id}`);
     setDetail(data);
-  }, "detail");
+  });
 
   const update = async (patch: UpdateShoppingListInput) => {
     try {

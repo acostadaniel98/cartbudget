@@ -19,7 +19,7 @@ export function useShoppingItems(shoppingListId: string, presupuesto: number | u
     setItems(await apiFetch<ShoppingItem[]>(`/api/v1/lists/${shoppingListId}/items`));
   };
 
-  useRealtimeList(shoppingListId, reload, "items");
+  useRealtimeList(shoppingListId, reload);
 
   useEffect(() => {
     let active = true;

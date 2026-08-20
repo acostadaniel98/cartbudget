@@ -3,10 +3,17 @@
 import { useEffect, useRef } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-export function useRealtimeList(listId: string, onChange: () => void | Promise<void>) {
-  const onChangeRef = useRef(onChange);
+export function useRealtimeList(
+  listId: string,
+  onChange: (() => void | Promise<void>) | string,
+  legacyOnChange?: () => void | Promise<void>,
+) {
+  const changeHandler = typeof onChange === "function" ? onChange : legacyOnChange;
+  if (!changeHandler) throw new Error("useRealtimeList requiere un callback de actualización");
+
+  const onChangeRef = useRef<() => void | Promise<void>>(changeHandler);
   const channelRef = useRef<ReturnType<ReturnType<typeof createSupabaseBrowserClient>["channel"]> | null>(null);
-  onChangeRef.current = onChange;
+  onChangeRef.current = changeHandler;
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();

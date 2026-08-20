@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getAppUrl } from "@/lib/app-url";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -12,5 +13,5 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(new URL(destination, url.origin));
+  return NextResponse.redirect(new URL(destination, getAppUrl(request)));
 }

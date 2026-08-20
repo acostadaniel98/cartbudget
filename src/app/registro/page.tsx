@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { SITE_CONFIG } from "@/config/site";
 
 const registrationSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
@@ -48,7 +49,7 @@ export default function RegistrationPage() {
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? SITE_CONFIG.url}/auth/callback` },
     });
 
     if (error) {

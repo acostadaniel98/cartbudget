@@ -4,6 +4,7 @@ import { ListMemberRole } from "@prisma/client";
 import { requireUser, UnauthorizedError } from "@/lib/auth/require-user";
 import { createInvitationToken } from "@/lib/auth/invitation-token";
 import { prisma } from "@/lib/prisma";
+import { getAppUrl } from "@/lib/app-url";
 
 const invitationSchema = z.object({
   role: z.enum(["EDITOR", "VIEWER"]).default("EDITOR"),
@@ -37,7 +38,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       },
       select: { id: true, role: true, expiresAt: true },
     });
-    const url = new URL(`/compartir/${token}`, request.url);
+    const url = new URL(`/compartir/${token}`, getAppUrl(request));
     return NextResponse.json(
       { data: { ...invitation, url: url.toString() } },
       { status: 201 },
