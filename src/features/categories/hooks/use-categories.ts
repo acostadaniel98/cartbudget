@@ -1,20 +1,23 @@
 "use client";
 
-import { useLiveQuery } from "dexie-react-hooks";
-import { categoryService } from "@/services/category-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api/client";
 import type { Category, CreateCategoryInput } from "@/domain/models/category";
 
 export function useCategories() {
-  const mounted = useMounted();
+  const [categories, setCategories] = useState<Category[] | undefined>(undefined);
 
-  const categories = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return categoryService.getAll();
-  }, [mounted]);
+  useEffect(() => {
+    apiFetch<Category[]>("/api/v1/categories").then(setCategories).catch(() => setCategories([]));
+  }, []);
 
   const createCategory = async (input: CreateCategoryInput): Promise<Category> => {
-    return categoryService.create(input);
+    const category = await apiFetch<Category>("/api/v1/categories", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+    setCategories((current) => [...(current ?? []), category]);
+    return category;
   };
 
   return {

@@ -11,7 +11,7 @@ import {
   type DraftProduct,
 } from "@/features/shopping-lists/components/quick-add-products";
 import type { ShoppingListFormValues } from "@/features/shopping-lists/schemas/shopping-list-schema";
-import { shoppingListService } from "@/services/shopping-list-service";
+import { apiFetch } from "@/lib/api/client";
 import { UNCATEGORIZED_ID } from "@/constants/categories";
 import { ROUTES } from "@/constants/routes";
 
@@ -48,19 +48,20 @@ function NuevaCompraForm() {
           ? undefined
           : Number(listValues.presupuesto);
 
-      const { list: newList } = await shoppingListService.createWithItems(
-        {
+      const { list: newList } = await apiFetch<{ list: { id: string } }>("/api/v1/lists", {
+        method: "POST",
+        body: JSON.stringify({
           nombre: listValues.nombre.trim(),
           presupuesto: presupuestoValue,
           notas: listValues.notas?.trim() || undefined,
           esPlantilla,
-        },
-        products.map((p) => ({
-          nombre: p.nombre,
-          cantidad: p.cantidad,
-          categoria: p.categoria,
-        })),
-      );
+          items: products.map((p) => ({
+            nombre: p.nombre,
+            cantidad: p.cantidad,
+            categoria: p.categoria,
+          })),
+        }),
+      });
 
       toast.success(esPlantilla ? "Plantilla creada" : "Compra creada");
       router.push(ROUTES.compra(newList.id));

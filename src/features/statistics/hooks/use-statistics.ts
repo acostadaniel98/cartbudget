@@ -1,16 +1,19 @@
 "use client";
 
-import { useLiveQuery } from "dexie-react-hooks";
-import { statisticsService } from "@/services/statistics-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api/client";
+import type { StatisticsData } from "@/services/statistics-service";
 
 export function useStatistics() {
-  const mounted = useMounted();
+  const [stats, setStats] = useState<StatisticsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const stats = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return statisticsService.getStatistics();
-  }, [mounted]);
+  useEffect(() => {
+    apiFetch<StatisticsData>("/api/v1/statistics")
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setIsLoading(false));
+  }, []);
 
-  return { stats: stats ?? null, isLoading: stats === undefined };
+  return { stats, isLoading };
 }

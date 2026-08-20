@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DuplicateListDialog } from "@/features/shopping-lists/components/duplicate-list-dialog";
 import { useListSummary } from "@/features/shopping-items/hooks/use-list-summary";
-import { shoppingListService } from "@/services/shopping-list-service";
+import { apiFetch } from "@/lib/api/client";
+import { duplicateShoppingList } from "@/lib/api/shopping-lists";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { ROUTES } from "@/constants/routes";
 import type { ShoppingList } from "@/domain/models/shopping-list";
@@ -77,7 +78,7 @@ export function HistoryListItem({ list }: { list: ShoppingList }) {
         defaultName={`${list.nombre} (copia)`}
         confirmLabel="Duplicar"
         onConfirm={async (nombre) => {
-          const newList = await shoppingListService.duplicate(list.id, nombre);
+          const { list: newList } = await duplicateShoppingList(list, nombre);
           toast.success("Compra duplicada");
           router.push(ROUTES.compra(newList.id));
         }}
@@ -95,7 +96,7 @@ export function HistoryListItem({ list }: { list: ShoppingList }) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                await shoppingListService.delete(list.id);
+                await apiFetch(`/api/v1/lists/${list.id}`, { method: "DELETE" });
                 toast.success("Compra eliminada");
               }}
             >

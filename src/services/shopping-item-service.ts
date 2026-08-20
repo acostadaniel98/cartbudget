@@ -4,8 +4,9 @@ import type {
   UpdateShoppingItemInput,
 } from "@/domain/models/shopping-item";
 import { ItemStatus } from "@/domain/models/item-status";
-import { DexieShoppingItemRepository } from "@/repositories/dexie/dexie-shopping-item-repository";
-import { DexieFrequentProductRepository } from "@/repositories/dexie/dexie-frequent-product-repository";
+import type { IFrequentProductRepository } from "@/domain/repositories/frequent-product-repository";
+import type { IShoppingItemRepository } from "@/domain/repositories/shopping-item-repository";
+import { localRepositories } from "./local-repositories";
 
 /**
  * Servicio de aplicación para productos dentro de una lista de compra.
@@ -15,8 +16,8 @@ import { DexieFrequentProductRepository } from "@/repositories/dexie/dexie-frequ
  */
 export class ShoppingItemService {
   constructor(
-    private readonly items = new DexieShoppingItemRepository(),
-    private readonly frequentProducts = new DexieFrequentProductRepository(),
+    private readonly items: IShoppingItemRepository,
+    private readonly frequentProducts: IFrequentProductRepository,
   ) {}
 
   getByListId(shoppingListId: string): Promise<ShoppingItem[]> {
@@ -83,4 +84,7 @@ export class ShoppingItemService {
   }
 }
 
-export const shoppingItemService = new ShoppingItemService();
+export const shoppingItemService = new ShoppingItemService(
+  localRepositories.items,
+  localRepositories.frequentProducts,
+);

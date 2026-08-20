@@ -2,11 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { ServiceWorkerRegister } from "@/components/shared/service-worker-register";
-import { DatabaseBootstrap } from "@/components/shared/database-bootstrap";
 import { OfflineBanner } from "@/components/shared/offline-banner";
-import { BottomNav } from "@/components/shared/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
-import { FloatingCalculator } from "@/components/shared/floating-calculator";
+import { AuthenticatedShell } from "@/components/shared/authenticated-shell";
 import { SITE_CONFIG } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -100,11 +98,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-dvh antialiased">
         <ThemeProvider>
           <ServiceWorkerRegister />
-          <DatabaseBootstrap />
           <OfflineBanner />
-          <div className="mx-auto min-h-dvh max-w-3xl pb-20">{children}</div>
-          <BottomNav />
-          <FloatingCalculator />
+          <div className="mx-auto min-h-dvh max-w-3xl pb-20">
+            <AuthenticatedShell>{children}</AuthenticatedShell>
+          </div>
           <Toaster />
         </ThemeProvider>
       </body>

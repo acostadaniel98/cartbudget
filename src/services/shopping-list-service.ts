@@ -5,9 +5,10 @@ import type {
 } from "@/domain/models/shopping-list";
 import type { CreateShoppingItemInput, ShoppingItem } from "@/domain/models/shopping-item";
 import { ItemStatus } from "@/domain/models/item-status";
-import { DexieShoppingListRepository } from "@/repositories/dexie/dexie-shopping-list-repository";
-import { DexieShoppingItemRepository } from "@/repositories/dexie/dexie-shopping-item-repository";
-import { DexieFrequentProductRepository } from "@/repositories/dexie/dexie-frequent-product-repository";
+import type { IFrequentProductRepository } from "@/domain/repositories/frequent-product-repository";
+import type { IShoppingItemRepository } from "@/domain/repositories/shopping-item-repository";
+import type { IShoppingListRepository } from "@/domain/repositories/shopping-list-repository";
+import { localRepositories } from "./local-repositories";
 
 /**
  * Servicio de aplicación: orquesta el repositorio de listas (y, cuando es
@@ -18,9 +19,9 @@ import { DexieFrequentProductRepository } from "@/repositories/dexie/dexie-frequ
  */
 export class ShoppingListService {
   constructor(
-    private readonly lists = new DexieShoppingListRepository(),
-    private readonly items = new DexieShoppingItemRepository(),
-    private readonly frequentProducts = new DexieFrequentProductRepository(),
+    private readonly lists: IShoppingListRepository,
+    private readonly items: IShoppingItemRepository,
+    private readonly frequentProducts: IFrequentProductRepository,
   ) {}
 
   getAll(): Promise<ShoppingList[]> {
@@ -117,4 +118,8 @@ export class ShoppingListService {
   }
 }
 
-export const shoppingListService = new ShoppingListService();
+export const shoppingListService = new ShoppingListService(
+  localRepositories.lists,
+  localRepositories.items,
+  localRepositories.frequentProducts,
+);

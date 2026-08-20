@@ -1,19 +1,24 @@
 "use client";
 
 import { useMemo } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
-import { shoppingItemService } from "@/services/shopping-item-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { useEffect, useState } from "react";
 import { summarizeBudget } from "@/domain/services/budget-calculator";
+import type { ShoppingItem } from "@/domain/models/shopping-item";
+import { apiFetch } from "@/lib/api/client";
 
 /** Resumen de presupuesto de solo lectura, pensado para tarjetas de lista. */
 export function useListSummary(shoppingListId: string, presupuesto: number | undefined) {
-  const mounted = useMounted();
+  const [items, setItems] = useState<ShoppingItem[] | undefined>(undefined);
 
-  const items = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return shoppingItemService.getByListId(shoppingListId);
-  }, [mounted, shoppingListId]);
+  useEffect(() => {
+    let active = true;
+    apiFetch<ShoppingItem[]>(`/api/v1/lists/${shoppingListId}/items`)
+      .then((data) => active && setItems(data))
+      .catch(() => active && setItems([]));
+    return () => {
+      active = false;
+    };
+  }, [shoppingListId]);
 
   const summary = useMemo(() => summarizeBudget(presupuesto, items ?? []), [presupuesto, items]);
 

@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DuplicateListDialog } from "@/features/shopping-lists/components/duplicate-list-dialog";
 import { useListSummary } from "@/features/shopping-items/hooks/use-list-summary";
-import { shoppingListService } from "@/services/shopping-list-service";
+import { apiFetch } from "@/lib/api/client";
+import { duplicateShoppingList } from "@/lib/api/shopping-lists";
 import { ROUTES } from "@/constants/routes";
 import type { ShoppingList } from "@/domain/models/shopping-list";
 
@@ -61,7 +62,7 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
         defaultName={template.nombre}
         confirmLabel="Crear compra"
         onConfirm={async (nombre) => {
-          const newList = await shoppingListService.duplicate(template.id, nombre);
+          const { list: newList } = await duplicateShoppingList(template, nombre);
           toast.success("Compra creada desde la plantilla");
           router.push(ROUTES.compra(newList.id));
         }}
@@ -79,7 +80,7 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                await shoppingListService.delete(template.id);
+                await apiFetch(`/api/v1/lists/${template.id}`, { method: "DELETE" });
                 toast.success("Plantilla eliminada");
               }}
             >

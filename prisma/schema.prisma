@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ItemStatus {
+  PENDIENTE     @map("pendiente")
+  COMPRADO      @map("comprado")
+  NO_ENCONTRADO @map("no_encontrado")
+}
+
+enum ListMemberRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model ShoppingList {
+  id                 String         @id @default(uuid()) @db.Uuid
+  userId             String         @map("user_id") @db.Uuid
+  nombre             String
+  presupuesto        Decimal?       @db.Decimal(12, 2)
+  fechaCreacion      DateTime       @default(now()) @map("fecha_creacion")
+  fechaActualizacion DateTime       @updatedAt @map("fecha_actualizacion")
+  esPlantilla        Boolean        @default(false) @map("es_plantilla")
+  notas              String?
+  items              ShoppingItem[]
+  members            ListMember[]
+  invitations        ListInvitation[]
+
+  @@index([userId, fechaCreacion])
+  @@index([userId, esPlantilla, fechaActualizacion])
+  @@map("shopping_lists")
+}
+
+model ListMember {
+  id        String         @id @default(uuid()) @db.Uuid
+  listId    String         @map("list_id") @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  role      ListMemberRole @default(VIEWER)
+  createdAt DateTime       @default(now()) @map("created_at")
+  list      ShoppingList   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, userId])
+  @@index([userId, role])
+  @@map("list_members")
+}
+
+model ListInvitation {
+  id               String         @id @default(uuid()) @db.Uuid
+  listId           String         @map("list_id") @db.Uuid
+  inviterId        String         @map("inviter_id") @db.Uuid
+  tokenHash        String         @unique @map("token_hash")
+  role             ListMemberRole @default(EDITOR)
+  expiresAt        DateTime       @map("expires_at")
+  acceptedAt       DateTime?      @map("accepted_at")
+  acceptedByUserId String?        @map("accepted_by_user_id") @db.Uuid
+  revokedAt        DateTime?      @map("revoked_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  list             ShoppingList   @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([listId, revokedAt, expiresAt])
+  @@map("list_invitations")
+}
+
+model ShoppingItem {
+  id                 String       @id @default(uuid()) @db.Uuid
+  shoppingListId     String       @map("shopping_list_id") @db.Uuid
+  nombre             String
+  cantidad           Decimal      @default(1) @db.Decimal(12, 3)
+  precioUnitario     Decimal      @default(0) @map("precio_unitario") @db.Decimal(12, 2)
+  precioTotal        Decimal      @default(0) @map("precio_total") @db.Decimal(12, 2)
+  categoria          String
+  estado             ItemStatus   @default(PENDIENTE)
+  notas              String?
+  orden              Int          @default(0)
+  fechaCompra        DateTime?    @map("fecha_compra")
+  shoppingList       ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+
+  @@index([shoppingListId, orden])
+  @@index([shoppingListId, estado])
+  @@map("shopping_items")
+}
+
+model FrequentProduct {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  nombreNormalizado    String   @map("nombre_normalizado")
+  nombre               String
+  categoria            String
+  frecuencia           Int      @default(1)
+  ultimoPrecioUnitario Decimal? @map("ultimo_precio_unitario") @db.Decimal(12, 2)
+  ultimaCantidad       Decimal? @map("ultima_cantidad") @db.Decimal(12, 3)
+  fechaActualizacion   DateTime @updatedAt @map("fecha_actualizacion")
+
+  @@unique([userId, nombreNormalizado])
+  @@index([userId, frecuencia])
+  @@map("frequent_products")
+}
+
+model Category {
+  id            String  @id @default(uuid()) @db.Uuid
+  userId        String  @map("user_id") @db.Uuid
+  nombre        String
+  icono         String
+  color         String
+  personalizada Boolean @default(false)
+  orden         Int     @default(0)
+
+  @@unique([userId, nombre])
+  @@index([userId, orden])
+  @@map("categories")
+}

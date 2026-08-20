@@ -1,5 +1,5 @@
-import { DexieShoppingListRepository } from "@/repositories/dexie/dexie-shopping-list-repository";
-import { DexieShoppingItemRepository } from "@/repositories/dexie/dexie-shopping-item-repository";
+import type { IShoppingItemRepository } from "@/domain/repositories/shopping-item-repository";
+import type { IShoppingListRepository } from "@/domain/repositories/shopping-list-repository";
 import {
   getAverageSpent,
   getMostPurchasedProducts,
@@ -17,11 +17,10 @@ export interface StatisticsData {
   categoriasMasUtilizadas: ReturnType<typeof getMostUsedCategories>;
   totalCompras: number;
 }
-
 export class StatisticsService {
   constructor(
-    private readonly lists = new DexieShoppingListRepository(),
-    private readonly items = new DexieShoppingItemRepository(),
+    private readonly lists: IShoppingListRepository,
+    private readonly items: IShoppingItemRepository,
   ) {}
 
   async getStatistics(): Promise<StatisticsData> {
@@ -45,5 +44,3 @@ export class StatisticsService {
     };
   }
 }
-
-export const statisticsService = new StatisticsService();

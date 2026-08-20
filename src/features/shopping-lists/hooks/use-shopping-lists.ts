@@ -1,51 +1,92 @@
 "use client";
 
-import { useLiveQuery } from "dexie-react-hooks";
-import { shoppingListService } from "@/services/shopping-list-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { useEffect, useState } from "react";
+import type { ShoppingItem } from "@/domain/models/shopping-item";
+import type { ShoppingList } from "@/domain/models/shopping-list";
+import { apiFetch } from "@/lib/api/client";
 
-/** Todas las compras no-plantilla, más recientes primero. */
+async function getLists() {
+  return apiFetch<ShoppingList[]>("/api/v1/lists");
+}
+
 export function useShoppingLists() {
-  const mounted = useMounted();
+  const [lists, setLists] = useState<ShoppingList[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const lists = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    const all = await shoppingListService.getAll();
-    return all.filter((list) => !list.esPlantilla);
-  }, [mounted]);
+  useEffect(() => {
+    let active = true;
+    getLists()
+      .then((data) => active && setLists(data.filter((list) => !list.esPlantilla)))
+      .catch(() => active && setLists([]))
+      .finally(() => active && setIsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  return { lists: lists ?? [], isLoading: lists === undefined };
+  return { lists, isLoading };
 }
 
 export function useRecentShoppingLists(limit = 5) {
-  const mounted = useMounted();
+  const [lists, setLists] = useState<ShoppingList[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const lists = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return shoppingListService.getRecent(limit);
-  }, [mounted, limit]);
+  useEffect(() => {
+    let active = true;
+    getLists()
+      .then((data) => active && setLists(data.filter((list) => !list.esPlantilla).slice(0, limit)))
+      .catch(() => active && setLists([]))
+      .finally(() => active && setIsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [limit]);
 
-  return { lists: lists ?? [], isLoading: lists === undefined };
+  return { lists, isLoading };
 }
 
 export function useActiveShoppingList() {
-  const mounted = useMounted();
+  const [activeList, setActiveList] = useState<ShoppingList | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const list = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return (await shoppingListService.getActiveList()) ?? null;
-  }, [mounted]);
+  useEffect(() => {
+    let active = true;
+    getLists()
+      .then(async (lists) => {
+        for (const list of lists.filter((candidate) => !candidate.esPlantilla).slice(0, 20)) {
+          const detail = await apiFetch<{ list: ShoppingList; items: ShoppingItem[] }>(
+            `/api/v1/lists/${list.id}`,
+          );
+          if (detail.items.some((item) => item.estado === "pendiente")) {
+            if (active) setActiveList(detail.list);
+            return;
+          }
+        }
+      })
+      .catch(() => active && setActiveList(null))
+      .finally(() => active && setIsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  return { activeList: list ?? null, isLoading: list === undefined };
+  return { activeList, isLoading };
 }
 
 export function useTemplates() {
-  const mounted = useMounted();
+  const [templates, setTemplates] = useState<ShoppingList[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const templates = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return shoppingListService.getTemplates();
-  }, [mounted]);
+  useEffect(() => {
+    let active = true;
+    getLists()
+      .then((data) => active && setTemplates(data.filter((list) => list.esPlantilla)))
+      .catch(() => active && setTemplates([]))
+      .finally(() => active && setIsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  return { templates: templates ?? [], isLoading: templates === undefined };
+  return { templates, isLoading };
 }

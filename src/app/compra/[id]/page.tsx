@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useParams } from "next/navigation";
-import { MoreVertical, Pencil, Copy, LayoutTemplate, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Copy, LayoutTemplate, Trash2, Share2 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +28,7 @@ import { useShoppingItems } from "@/features/shopping-items/hooks/use-shopping-i
 import { useShoppingList } from "@/features/shopping-lists/hooks/use-shopping-list";
 import { EditListDialog } from "@/features/shopping-lists/components/edit-list-dialog";
 import { DuplicateListDialog } from "@/features/shopping-lists/components/duplicate-list-dialog";
+import { ShareListDialog } from "@/features/shopping-lists/components/share-list-dialog";
 
 export default function CompraDetailPage() {
   const params = useParams<{ id: string }>();
@@ -49,6 +50,7 @@ export default function CompraDetailPage() {
   const [isEditOpen, setIsEditOpen] = React.useState(false);
   const [isDuplicateOpen, setIsDuplicateOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const [isShareOpen, setIsShareOpen] = React.useState(false);
 
   if (isLoading) {
     return <div className="text-muted-foreground px-4 py-6 text-sm">Cargando…</div>;
@@ -80,6 +82,9 @@ export default function CompraDetailPage() {
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsDuplicateOpen(true)}>
                 <Copy className="size-4" /> Duplicar compra
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setIsShareOpen(true)}>
+                <Share2 className="size-4" /> Compartir compra
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setEsPlantilla(!list.esPlantilla)}>
                 <LayoutTemplate className="size-4" />
@@ -122,6 +127,8 @@ export default function CompraDetailPage() {
         confirmLabel="Duplicar"
         onConfirm={(nombre) => duplicate(nombre)}
       />
+
+      <ShareListDialog listId={id} open={isShareOpen} onOpenChange={setIsShareOpen} />
 
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>

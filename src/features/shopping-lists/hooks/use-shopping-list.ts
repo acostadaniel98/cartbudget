@@ -1,25 +1,45 @@
 "use client";
 
-import { useLiveQuery } from "dexie-react-hooks";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { shoppingListService } from "@/services/shopping-list-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { apiFetch } from "@/lib/api/client";
+import { useRealtimeList } from "@/hooks/use-realtime-list";
 import { ROUTES } from "@/constants/routes";
+import type { ShoppingItem } from "@/domain/models/shopping-item";
+import type { ShoppingList } from "@/domain/models/shopping-list";
 import type { UpdateShoppingListInput } from "@/domain/models/shopping-list";
 
-export function useShoppingList(id: string) {
-  const mounted = useMounted();
-  const router = useRouter();
+type ListDetail = { list: ShoppingList; items: ShoppingItem[] };
 
-  const list = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return (await shoppingListService.getById(id)) ?? null;
-  }, [mounted, id]);
+export function useShoppingList(id: string) {
+  const router = useRouter();
+  const [detail, setDetail] = useState<ListDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    apiFetch<ListDetail>(`/api/v1/lists/${id}`)
+      .then((data) => active && setDetail(data))
+      .catch(() => active && setDetail(null))
+      .finally(() => active && setIsLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  useRealtimeList(id, async () => {
+    const data = await apiFetch<ListDetail>(`/api/v1/lists/${id}`);
+    setDetail(data);
+  }, "detail");
 
   const update = async (patch: UpdateShoppingListInput) => {
     try {
-      const updated = await shoppingListService.update(id, patch);
+      const updated = await apiFetch<ShoppingList>(`/api/v1/lists/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(patch),
+      });
+      setDetail((current) => (current ? { ...current, list: updated } : current));
       toast.success("Compra actualizada");
       return updated;
     } catch {
@@ -29,17 +49,12 @@ export function useShoppingList(id: string) {
   };
 
   const setEsPlantilla = async (esPlantilla: boolean) => {
-    try {
-      await shoppingListService.setEsPlantilla(id, esPlantilla);
-      toast.success(esPlantilla ? "Guardada como plantilla" : "Ya no es una plantilla");
-    } catch {
-      toast.error("No se pudo actualizar la plantilla", { description: "Inténtalo de nuevo." });
-    }
+    await update({ esPlantilla });
   };
 
   const remove = async () => {
     try {
-      await shoppingListService.delete(id);
+      await apiFetch(`/api/v1/lists/${id}`, { method: "DELETE" });
       toast.success("Compra eliminada");
       router.push(ROUTES.inicio);
     } catch {
@@ -49,10 +64,27 @@ export function useShoppingList(id: string) {
 
   const duplicate = async (nuevoNombre?: string) => {
     try {
-      const newList = await shoppingListService.duplicate(id, nuevoNombre);
+      if (!detail) throw new Error("Lista no disponible");
+      const created = await apiFetch<{ list: ShoppingList; items: ShoppingItem[] }>(
+        "/api/v1/lists",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            nombre: nuevoNombre?.trim() || `${detail.list.nombre} (copia)`,
+            presupuesto: detail.list.presupuesto,
+            esPlantilla: false,
+            items: detail.items.map((item) => ({
+              nombre: item.nombre,
+              cantidad: item.cantidad,
+              categoria: item.categoria,
+              notas: item.notas,
+            })),
+          }),
+        },
+      );
       toast.success("Compra duplicada");
-      router.push(ROUTES.compra(newList.id));
-      return newList;
+      router.push(ROUTES.compra(created.list.id));
+      return created.list;
     } catch {
       toast.error("No se pudo duplicar la compra", { description: "Inténtalo de nuevo." });
       return undefined;
@@ -60,8 +92,8 @@ export function useShoppingList(id: string) {
   };
 
   return {
-    list: list ?? null,
-    isLoading: list === undefined,
+    list: detail?.list ?? null,
+    isLoading,
     update,
     setEsPlantilla,
     remove,

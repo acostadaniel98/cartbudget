@@ -1,18 +1,27 @@
 "use client";
 
-import { useLiveQuery } from "dexie-react-hooks";
-import { frequentProductService } from "@/services/frequent-product-service";
-import { useMounted } from "@/hooks/use-mounted";
+import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { apiFetch } from "@/lib/api/client";
+import type { FrequentProduct } from "@/domain/models/frequent-product";
 
 export function useFrequentSuggestions(query: string, limit = 6) {
-  const mounted = useMounted();
   const debouncedQuery = useDebounce(query, 150);
+  const [products, setProducts] = useState<FrequentProduct[]>([]);
 
-  const suggestions = useLiveQuery(async () => {
-    if (!mounted) return undefined;
-    return frequentProductService.suggest(debouncedQuery, limit);
-  }, [mounted, debouncedQuery, limit]);
+  useEffect(() => {
+    let active = true;
+    apiFetch<FrequentProduct[]>("/api/v1/frequent-products")
+      .then((data) => active && setProducts(data))
+      .catch(() => active && setProducts([]));
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  return suggestions ?? [];
+  const queryValue = debouncedQuery.trim().toLowerCase();
+  return products
+    .filter((product) => !queryValue || product.nombreNormalizado.includes(queryValue))
+    .sort((a, b) => b.frecuencia - a.frecuencia)
+    .slice(0, limit);
 }
