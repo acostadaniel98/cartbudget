@@ -17,6 +17,7 @@ interface ProductListProps {
   onEdit: (item: ShoppingItem) => void;
   onDelete: (item: ShoppingItem) => void;
   onMarkNotFound: (item: ShoppingItem) => void;
+  onMarkPending: (item: ShoppingItem) => void;
 }
 
 export function ProductList({
@@ -27,6 +28,7 @@ export function ProductList({
   onEdit,
   onDelete,
   onMarkNotFound,
+  onMarkPending,
 }: ProductListProps) {
   const categoryById = new Map(categories.map((c) => [c.id, c]));
   const pendientes = items
@@ -60,6 +62,7 @@ export function ProductList({
                 onEdit={() => onEdit(item)}
                 onDelete={() => onDelete(item)}
                 onMarkNotFound={() => onMarkNotFound(item)}
+                onMarkPending={() => onMarkPending(item)}
                 onMoveUp={
                   index > 0
                     ? () => {
@@ -105,6 +108,7 @@ export function ProductList({
                   onEdit={() => onEdit(item)}
                   onDelete={() => onDelete(item)}
                   onMarkNotFound={() => onMarkNotFound(item)}
+                  onMarkPending={() => onMarkPending(item)}
                 />
               </div>
             ))}

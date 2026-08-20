@@ -2,7 +2,16 @@
 
 import * as React from "react";
 import { Reorder, motion, useDragControls, useAnimation, type DragControls } from "framer-motion";
-import { ArrowDown, ArrowUp, Ellipsis, GripVertical, Pencil, SearchX, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  CircleDashed,
+  Ellipsis,
+  GripVertical,
+  Pencil,
+  SearchX,
+  Trash2,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -30,6 +39,7 @@ interface ProductItemRowContentProps {
   onEdit: () => void;
   onDelete: () => void;
   onMarkNotFound: () => void;
+  onMarkPending: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 }
@@ -42,6 +52,7 @@ function ProductItemRowContent({
   onEdit,
   onDelete,
   onMarkNotFound,
+  onMarkPending,
   onMoveUp,
   onMoveDown,
 }: ProductItemRowContentProps) {
@@ -49,25 +60,42 @@ function ProductItemRowContent({
   const Icon = category ? getCategoryIcon(category.icono) : undefined;
   const isPurchased = item.estado === ItemStatus.COMPRADO;
   const isNotFound = item.estado === ItemStatus.NO_ENCONTRADO;
+  const isResolved = isPurchased || isNotFound;
   const closeSwipe = () => swipeControls.start({ x: 0 });
 
   return (
     <div className="relative">
       {/* Acciones reveladas al deslizar hacia la izquierda */}
       <div className="absolute inset-y-1 right-0 flex overflow-hidden rounded-r-2xl">
-        <button
-          type="button"
-          aria-label="Marcar como no encontrado"
-          onClick={() => {
-            closeSwipe();
-            onMarkNotFound();
-          }}
-          style={{ width: ACTION_WIDTH }}
-          className="bg-warning text-accent-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
-        >
-          <SearchX className="size-4" />
-          Agotado
-        </button>
+        {isResolved ? (
+          <button
+            type="button"
+            aria-label="Volver a pendiente"
+            onClick={() => {
+              closeSwipe();
+              onMarkPending();
+            }}
+            style={{ width: ACTION_WIDTH }}
+            className="bg-warning text-accent-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
+          >
+            <CircleDashed className="size-4" />
+            Pendiente
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label="Marcar como no encontrado"
+            onClick={() => {
+              closeSwipe();
+              onMarkNotFound();
+            }}
+            style={{ width: ACTION_WIDTH }}
+            className="bg-warning text-accent-foreground flex flex-col items-center justify-center gap-1 text-[11px] font-medium"
+          >
+            <SearchX className="size-4" />
+            Agotado
+          </button>
+        )}
         <button
           type="button"
           aria-label="Editar producto"
@@ -169,9 +197,15 @@ function ProductItemRowContent({
             <DropdownMenuItem onSelect={onEdit}>
               <Pencil className="size-4" /> Editar producto
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={onMarkNotFound}>
-              <SearchX className="size-4" /> Marcar como agotado
-            </DropdownMenuItem>
+            {isResolved ? (
+              <DropdownMenuItem onSelect={onMarkPending}>
+                <CircleDashed className="size-4" /> Volver a pendiente
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onSelect={onMarkNotFound}>
+                <SearchX className="size-4" /> Marcar como agotado
+              </DropdownMenuItem>
+            )}
             {(onMoveUp || onMoveDown) && <DropdownMenuSeparator />}
             {onMoveUp && (
               <DropdownMenuItem onSelect={onMoveUp}>
@@ -201,6 +235,7 @@ interface ProductItemProps {
   onEdit: () => void;
   onDelete: () => void;
   onMarkNotFound: () => void;
+  onMarkPending: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 }

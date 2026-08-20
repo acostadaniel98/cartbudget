@@ -94,6 +94,7 @@ export function ShoppingItemManager({
           onEdit={setEditingItem}
           onDelete={setDeletingItem}
           onMarkNotFound={(item) => markNotFound(item.id)}
+          onMarkPending={(item) => markPending(item.id)}
         />
       )}
 

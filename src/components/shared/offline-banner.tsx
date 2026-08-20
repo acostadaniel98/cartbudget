@@ -13,7 +13,7 @@ export function OfflineBanner() {
   return (
     <div className="safe-top bg-secondary text-secondary-foreground flex items-center justify-center gap-1.5 px-4 py-1.5 text-center text-xs font-medium">
       <WifiOff className="size-3.5" />
-      Sin conexión — tus cambios se guardan igual en este dispositivo
+      Sin conexión — no podrás guardar cambios hasta reconectarte
     </div>
   );
 }

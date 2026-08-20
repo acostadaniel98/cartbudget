@@ -72,9 +72,11 @@ export function ProductFormDialog({
   const nombre = watch("nombre") ?? "";
   const categoria = watch("categoria");
 
-  const submit = handleSubmit(async (values) => {
-    await onSubmit(values);
+  const submit = handleSubmit((values) => {
+    // Cierra al instante: el producto se agrega/actualiza de forma
+    // optimista y, si falla en segundo plano, se revierte con un toast.
     onOpenChange(false);
+    void onSubmit(values);
   });
 
   return (

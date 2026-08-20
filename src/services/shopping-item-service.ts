@@ -6,7 +6,6 @@ import type {
 import { ItemStatus } from "@/domain/models/item-status";
 import type { IFrequentProductRepository } from "@/domain/repositories/frequent-product-repository";
 import type { IShoppingItemRepository } from "@/domain/repositories/shopping-item-repository";
-import { localRepositories } from "./local-repositories";
 
 /**
  * Servicio de aplicación para productos dentro de una lista de compra.
@@ -83,8 +82,3 @@ export class ShoppingItemService {
     return this.items.delete(id);
   }
 }
-
-export const shoppingItemService = new ShoppingItemService(
-  localRepositories.items,
-  localRepositories.frequentProducts,
-);

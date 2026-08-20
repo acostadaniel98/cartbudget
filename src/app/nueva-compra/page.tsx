@@ -67,7 +67,7 @@ function NuevaCompraForm() {
       router.push(ROUTES.compra(newList.id));
     } catch {
       toast.error("No se pudo guardar la compra", {
-        description: "Revisa tu conexión local e inténtalo de nuevo.",
+        description: "Revisa tu conexión e inténtalo de nuevo.",
       });
     } finally {
       setIsSaving(false);

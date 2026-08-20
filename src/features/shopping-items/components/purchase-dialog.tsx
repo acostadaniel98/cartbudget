@@ -56,9 +56,12 @@ export function PurchaseDialog({ open, onOpenChange, item, onConfirm }: Purchase
   const total =
     cantidad > 0 && precioUnitario >= 0 ? calculateItemTotal(cantidad, precioUnitario) : 0;
 
-  const submit = handleSubmit(async (values) => {
-    await onConfirm(values.cantidad, values.precioUnitario);
+  const submit = handleSubmit((values) => {
+    // Cierra al instante: la lista se actualiza de forma optimista y, si el
+    // guardado falla en segundo plano, el hook revierte el cambio y avisa
+    // con un toast. Esperar la red aquí se sentiría lento durante la compra.
     onOpenChange(false);
+    void onConfirm(values.cantidad, values.precioUnitario);
   });
 
   return (
