@@ -19,7 +19,7 @@ export function AuthenticatedShell({ children }: { children: React.ReactNode }) 
     let active = true;
     createSupabaseBrowserClient()
       .auth.getUser()
-      .then(({ data }) => active && setIsAuthenticated(Boolean(data.user)))
+      .then(({ data }: { data: { user: unknown } }) => active && setIsAuthenticated(Boolean(data.user)))
       .catch(() => active && setIsAuthenticated(false));
 
     return () => {

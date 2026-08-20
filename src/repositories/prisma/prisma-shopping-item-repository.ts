@@ -10,6 +10,17 @@ import { prisma } from "@/lib/prisma";
 import { ItemStatus as PrismaItemStatus, ListMemberRole, type PrismaClient } from "@prisma/client";
 import { mapShoppingItem } from "./prisma-mappers";
 
+function toPrismaItemStatus(status: ItemStatus): PrismaItemStatus {
+  switch (status) {
+    case ItemStatus.PENDIENTE:
+      return PrismaItemStatus.PENDIENTE;
+    case ItemStatus.COMPRADO:
+      return PrismaItemStatus.COMPRADO;
+    case ItemStatus.NO_ENCONTRADO:
+      return PrismaItemStatus.NO_ENCONTRADO;
+  }
+}
+
 export class PrismaShoppingItemRepository implements IShoppingItemRepository {
   constructor(
     private readonly userId: string,
@@ -122,7 +133,7 @@ export class PrismaShoppingItemRepository implements IShoppingItemRepository {
         precioUnitario,
         precioTotal: calculateItemTotal(cantidad, precioUnitario),
         ...(patch.categoria !== undefined ? { categoria: patch.categoria } : {}),
-        ...(patch.estado !== undefined ? { estado: patch.estado as PrismaItemStatus } : {}),
+        ...(patch.estado !== undefined ? { estado: toPrismaItemStatus(patch.estado) } : {}),
         ...(patch.notas !== undefined ? { notas: patch.notas } : {}),
         ...(patch.orden !== undefined ? { orden: patch.orden } : {}),
         ...(patch.estado === ItemStatus.COMPRADO && existing.estado !== PrismaItemStatus.COMPRADO

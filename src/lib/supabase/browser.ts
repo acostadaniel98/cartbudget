@@ -10,9 +10,12 @@ function getSupabaseKey() {
   return key;
 }
 
+let browserClient: ReturnType<typeof createBrowserClient> | undefined;
+
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(
+  browserClient ??= createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     getSupabaseKey(),
   );
+  return browserClient;
 }
