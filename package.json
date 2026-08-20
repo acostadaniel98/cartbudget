@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "postinstall": "prisma generate",
     "prisma:generate": "dotenv -e .env.local -- prisma generate",
     "prisma:validate": "dotenv -e .env.local -- prisma validate",
     "prisma:migrate:deploy": "dotenv -e .env.local -- prisma migrate deploy",
