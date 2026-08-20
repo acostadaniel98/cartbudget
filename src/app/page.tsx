@@ -11,6 +11,7 @@ import {
   useRecentShoppingLists,
 } from "@/features/shopping-lists/hooks/use-shopping-lists";
 import { useListSummary } from "@/features/shopping-items/hooks/use-list-summary";
+import { getInitials, useProfile } from "@/features/profile/hooks/use-profile";
 import { ROUTES } from "@/constants/routes";
 import { SITE_CONFIG } from "@/config/site";
 
@@ -38,18 +39,28 @@ function ActiveListSummary({
 export default function DashboardPage() {
   const { activeList, isLoading: isLoadingActive } = useActiveShoppingList();
   const { lists: recent, isLoading: isLoadingRecent } = useRecentShoppingLists(6);
+  const { profile } = useProfile();
 
   const otherRecent = recent.filter((l) => l.id !== activeList?.id);
 
   return (
     <div className="space-y-6 px-4 pb-6">
-      <header className="flex items-center justify-between pt-2">
-        <div>
+      <header className="flex items-center justify-between gap-3 pt-2">
+        <div className="min-w-0">
           <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
             {SITE_CONFIG.nombre}
           </p>
-          <h1 className="font-display text-2xl font-extrabold">¿Qué vamos a comprar?</h1>
+          <h1 className="font-display truncate text-2xl font-extrabold">
+            {profile?.displayName ? `Hola, ${profile.displayName}` : "¿Qué vamos a comprar?"}
+          </h1>
         </div>
+        <Link
+          href={ROUTES.perfil}
+          aria-label="Tu perfil"
+          className="bg-primary text-primary-foreground font-display focus-visible:ring-ring flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-bold shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
+          {getInitials(profile)}
+        </Link>
       </header>
 
       <Button asChild size="lg" className="w-full">

@@ -48,7 +48,7 @@ export class PrismaShoppingListRepository implements IShoppingListRepository {
     return records.map(mapShoppingList);
   }
 
-  async create(input: CreateShoppingListInput): Promise<ShoppingList> {
+  async create(input: CreateShoppingListInput, userEmail: string): Promise<ShoppingList> {
     const record = await this.db.shoppingList.create({
       data: {
         userId: this.userId,
@@ -56,7 +56,7 @@ export class PrismaShoppingListRepository implements IShoppingListRepository {
         presupuesto: input.presupuesto,
         esPlantilla: input.esPlantilla ?? false,
         notas: input.notas,
-        members: { create: { userId: this.userId, role: ListMemberRole.OWNER } },
+        members: { create: { userId: this.userId, email: userEmail, role: ListMemberRole.OWNER } },
       },
     });
     return mapShoppingList(record);
@@ -65,6 +65,7 @@ export class PrismaShoppingListRepository implements IShoppingListRepository {
   async createWithItems(
     input: CreateShoppingListInput,
     inputs: Omit<CreateShoppingItemInput, "shoppingListId">[],
+    userEmail: string,
   ): Promise<{ list: ShoppingList; items: ReturnType<typeof mapShoppingItem>[] }> {
     const result = await this.db.$transaction(async (tx) => {
       const list = await tx.shoppingList.create({
@@ -74,7 +75,7 @@ export class PrismaShoppingListRepository implements IShoppingListRepository {
           presupuesto: input.presupuesto,
           esPlantilla: input.esPlantilla ?? false,
           notas: input.notas,
-          members: { create: { userId: this.userId, role: ListMemberRole.OWNER } },
+          members: { create: { userId: this.userId, email: userEmail, role: ListMemberRole.OWNER } },
         },
       });
       const items = await Promise.all(

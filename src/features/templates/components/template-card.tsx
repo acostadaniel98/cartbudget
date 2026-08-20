@@ -22,7 +22,12 @@ import { duplicateShoppingList } from "@/lib/api/shopping-lists";
 import { ROUTES } from "@/constants/routes";
 import type { ShoppingList } from "@/domain/models/shopping-list";
 
-export function TemplateCard({ template }: { template: ShoppingList }) {
+interface TemplateCardProps {
+  template: ShoppingList;
+  onDeleted: (id: string) => void;
+}
+
+export function TemplateCard({ template, onDeleted }: TemplateCardProps) {
   const router = useRouter();
   const { summary } = useListSummary(template.id, template.presupuesto);
   const [isUseOpen, setIsUseOpen] = React.useState(false);
@@ -80,8 +85,13 @@ export function TemplateCard({ template }: { template: ShoppingList }) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                await apiFetch(`/api/v1/lists/${template.id}`, { method: "DELETE" });
-                toast.success("Plantilla eliminada");
+                try {
+                  await apiFetch(`/api/v1/lists/${template.id}`, { method: "DELETE" });
+                  onDeleted(template.id);
+                  toast.success("Plantilla eliminada");
+                } catch {
+                  toast.error("No se pudo eliminar la plantilla", { description: "Inténtalo de nuevo." });
+                }
               }}
             >
               Eliminar

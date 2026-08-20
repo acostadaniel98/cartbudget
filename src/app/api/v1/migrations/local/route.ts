@@ -80,7 +80,7 @@ export async function POST(request: Request) {
             notas: list.notas,
             fechaCreacion: dateFromMilliseconds(list.fechaCreacion),
             fechaActualizacion: dateFromMilliseconds(list.fechaActualizacion),
-            members: { create: { userId: user.id, role: ListMemberRole.OWNER } },
+            members: { create: { userId: user.id, email: user.email ?? "", role: ListMemberRole.OWNER } },
           },
         });
         ids.set(list.legacyId, created.id);

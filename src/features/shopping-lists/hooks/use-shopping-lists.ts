@@ -24,7 +24,12 @@ export function useShoppingLists() {
     };
   }, []);
 
-  return { lists, isLoading };
+  // Quita una compra de la lista en pantalla al instante tras eliminarla:
+  // sin esto, la tarjeta se quedaba visible después de borrar hasta
+  // recargar la página, y al tocarla mostraba "esta compra ya no existe".
+  const removeList = (id: string) => setLists((current) => current.filter((list) => list.id !== id));
+
+  return { lists, isLoading, removeList };
 }
 
 export function useRecentShoppingLists(limit = 5) {
@@ -42,7 +47,9 @@ export function useRecentShoppingLists(limit = 5) {
     };
   }, [limit]);
 
-  return { lists, isLoading };
+  const removeList = (id: string) => setLists((current) => current.filter((list) => list.id !== id));
+
+  return { lists, isLoading, removeList };
 }
 
 export function useActiveShoppingList() {
@@ -88,5 +95,8 @@ export function useTemplates() {
     };
   }, []);
 
-  return { templates, isLoading };
+  const removeTemplate = (id: string) =>
+    setTemplates((current) => current.filter((template) => template.id !== id));
+
+  return { templates, isLoading, removeTemplate };
 }

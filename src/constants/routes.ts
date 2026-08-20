@@ -5,4 +5,5 @@ export const ROUTES = {
   historial: "/historial",
   plantillas: "/plantillas",
   estadisticas: "/estadisticas",
+  perfil: "/perfil",
 } as const;

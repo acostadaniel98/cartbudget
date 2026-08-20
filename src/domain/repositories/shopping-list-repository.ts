@@ -16,10 +16,11 @@ export interface IShoppingListRepository {
   getById(id: string): Promise<ShoppingList | undefined>;
   getRecent(limit: number): Promise<ShoppingList[]>;
   getTemplates(): Promise<ShoppingList[]>;
-  create(input: CreateShoppingListInput): Promise<ShoppingList>;
+  create(input: CreateShoppingListInput, userEmail: string): Promise<ShoppingList>;
   createWithItems(
     input: CreateShoppingListInput,
     items: Omit<CreateShoppingItemInput, "shoppingListId">[],
+    userEmail: string,
   ): Promise<{ list: ShoppingList; items: ShoppingItem[] }>;
   update(id: string, patch: UpdateShoppingListInput): Promise<ShoppingList>;
   delete(id: string): Promise<void>;

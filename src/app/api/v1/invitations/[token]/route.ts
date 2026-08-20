@@ -32,10 +32,13 @@ export async function POST(_request: Request, context: { params: Promise<{ token
       const role = existing?.role === ListMemberRole.OWNER || existing?.role === ListMemberRole.EDITOR
         ? existing.role
         : invitation.role;
+      const email = user.email ?? "";
       await tx.listMember.upsert({
         where: { listId_userId: { listId: invitation.listId, userId: user.id } },
-        create: { listId: invitation.listId, userId: user.id, role },
-        update: { role },
+        create: { listId: invitation.listId, userId: user.id, email, role },
+        // Aprovechamos cada re-aceptación para refrescar el correo guardado,
+        // por si cambió desde que se unió por primera vez.
+        update: { role, email },
       });
       await tx.listInvitation.update({
         where: { id: invitation.id },

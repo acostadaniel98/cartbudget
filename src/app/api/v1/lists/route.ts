@@ -58,10 +58,11 @@ export async function POST(request: Request) {
       ...listInput,
       presupuesto: listInput.presupuesto ?? undefined,
     };
+    const userEmail = user.email ?? "";
     const data =
       items && items.length > 0
-        ? await repository.createWithItems(normalizedListInput, items)
-        : { list: await repository.create(normalizedListInput), items: [] };
+        ? await repository.createWithItems(normalizedListInput, items, userEmail)
+        : { list: await repository.create(normalizedListInput, userEmail), items: [] };
     return NextResponse.json({ data }, { status: 201 });
   } catch (error) {
     return errorResponse(error);

@@ -10,7 +10,8 @@ import type { ShoppingItem } from "@/domain/models/shopping-item";
 import type { ShoppingList } from "@/domain/models/shopping-list";
 import type { UpdateShoppingListInput } from "@/domain/models/shopping-list";
 
-type ListDetail = { list: ShoppingList; items: ShoppingItem[] };
+export type ListRole = "OWNER" | "EDITOR" | "VIEWER";
+type ListDetail = { list: ShoppingList; items: ShoppingItem[]; role?: ListRole };
 
 export function useShoppingList(id: string) {
   const router = useRouter();
@@ -93,6 +94,7 @@ export function useShoppingList(id: string) {
 
   return {
     list: detail?.list ?? null,
+    role: detail?.role,
     isLoading,
     update,
     setEsPlantilla,

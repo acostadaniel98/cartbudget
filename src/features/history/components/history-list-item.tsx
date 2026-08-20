@@ -30,7 +30,12 @@ import { formatCurrency, formatDate } from "@/lib/format";
 import { ROUTES } from "@/constants/routes";
 import type { ShoppingList } from "@/domain/models/shopping-list";
 
-export function HistoryListItem({ list }: { list: ShoppingList }) {
+interface HistoryListItemProps {
+  list: ShoppingList;
+  onDeleted: (id: string) => void;
+}
+
+export function HistoryListItem({ list, onDeleted }: HistoryListItemProps) {
   const router = useRouter();
   const { summary } = useListSummary(list.id, list.presupuesto);
   const [isDuplicateOpen, setIsDuplicateOpen] = React.useState(false);
@@ -96,8 +101,13 @@ export function HistoryListItem({ list }: { list: ShoppingList }) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                await apiFetch(`/api/v1/lists/${list.id}`, { method: "DELETE" });
-                toast.success("Compra eliminada");
+                try {
+                  await apiFetch(`/api/v1/lists/${list.id}`, { method: "DELETE" });
+                  onDeleted(list.id);
+                  toast.success("Compra eliminada");
+                } catch {
+                  toast.error("No se pudo eliminar la compra", { description: "Inténtalo de nuevo." });
+                }
               }}
             >
               Eliminar

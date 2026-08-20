@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireUser, UnauthorizedError, ForbiddenError } from "@/lib/auth/require-user";
-import { requireListRole } from "@/lib/auth/list-access";
+import { getListRole, requireListRole } from "@/lib/auth/list-access";
 import { ListMemberRole } from "@prisma/client";
 import { PrismaShoppingItemRepository } from "@/repositories/prisma/prisma-shopping-item-repository";
 import { PrismaShoppingListRepository } from "@/repositories/prisma/prisma-shopping-list-repository";
@@ -52,8 +52,11 @@ export async function GET(_request: Request, context: RouteContext) {
     const lists = new PrismaShoppingListRepository(user.id);
     const list = await lists.getById(id);
     if (!list) return errorResponse(new Error("Lista no encontrada"));
-    const items = await new PrismaShoppingItemRepository(user.id).getByListId(id);
-    return NextResponse.json({ data: { list, items } });
+    const [items, role] = await Promise.all([
+      new PrismaShoppingItemRepository(user.id).getByListId(id),
+      getListRole(id, user.id),
+    ]);
+    return NextResponse.json({ data: { list, items, role } });
   } catch (error) {
     return errorResponse(error);
   }

@@ -18,6 +18,12 @@ const registrationSchema = z.object({ email: emailSchema }).and(newPasswordSchem
 
 export default function RegistrationPage() {
   const router = useRouter();
+  // Si llegamos aquí desde login con un "next" (por ejemplo, un enlace de
+  // invitación a una compra en conjunto), hay que conservarlo: si no, la
+  // persona termina en el inicio en vez de en la compra que la invitó.
+  const nextPath = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search).get("next");
+  const destination = nextPath?.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/";
+  const loginHref = nextPath ? `/login?next=${encodeURIComponent(destination)}` : "/login";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -36,10 +42,13 @@ export default function RegistrationPage() {
 
     setIsSubmitting(true);
     const supabase = createSupabaseBrowserClient();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? SITE_CONFIG.url;
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
-      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? SITE_CONFIG.url}/auth/callback` },
+      options: {
+        emailRedirectTo: `${appUrl}/auth/callback?next=${encodeURIComponent(destination)}`,
+      },
     });
 
     if (error) {
@@ -50,7 +59,7 @@ export default function RegistrationPage() {
 
     setIsSubmitting(false);
     if (data.session) {
-      router.replace("/");
+      router.replace(destination);
       router.refresh();
       return;
     }
@@ -66,7 +75,7 @@ export default function RegistrationPage() {
             {message}
           </p>
           <Button asChild className="w-full">
-            <Link href="/login">Ir a iniciar sesión</Link>
+            <Link href={loginHref}>Ir a iniciar sesión</Link>
           </Button>
         </div>
       ) : (
@@ -130,7 +139,7 @@ export default function RegistrationPage() {
           </Button>
           <p className="text-muted-foreground text-center text-sm">
             ¿Ya tienes cuenta?{" "}
-            <Link className="text-primary font-semibold hover:underline" href="/login">
+            <Link className="text-primary font-semibold hover:underline" href={loginHref}>
               Inicia sesión
             </Link>
           </p>

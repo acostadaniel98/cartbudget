@@ -95,7 +95,10 @@ export default function LoginPage() {
       footer={
         <p className="text-muted-foreground mt-6 text-center text-sm">
           ¿No tienes cuenta?{" "}
-          <Link className="text-primary font-semibold hover:underline" href="/registro">
+          <Link
+            className="text-primary font-semibold hover:underline"
+            href={nextPath ? `/registro?next=${encodeURIComponent(nextPath)}` : "/registro"}
+          >
             Regístrate
           </Link>
         </p>

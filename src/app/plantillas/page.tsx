@@ -9,7 +9,7 @@ import { TemplateCard } from "@/features/templates/components/template-card";
 import { useTemplates } from "@/features/shopping-lists/hooks/use-shopping-lists";
 
 export default function PlantillasPage() {
-  const { templates, isLoading } = useTemplates();
+  const { templates, isLoading, removeTemplate } = useTemplates();
 
   return (
     <div className="space-y-4 px-4 pb-6">
@@ -49,7 +49,7 @@ export default function PlantillasPage() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {templates.map((template) => (
-          <TemplateCard key={template.id} template={template} />
+          <TemplateCard key={template.id} template={template} onDeleted={removeTemplate} />
         ))}
       </div>
     </div>

@@ -7,7 +7,7 @@ import { HistoryListItem } from "@/features/history/components/history-list-item
 import { useShoppingLists } from "@/features/shopping-lists/hooks/use-shopping-lists";
 
 export default function HistorialPage() {
-  const { lists, isLoading } = useShoppingLists();
+  const { lists, isLoading, removeList } = useShoppingLists();
 
   return (
     <div className="space-y-4 px-4 pb-6">
@@ -31,7 +31,7 @@ export default function HistorialPage() {
 
       <div className="space-y-2">
         {lists.map((list) => (
-          <HistoryListItem key={list.id} list={list} />
+          <HistoryListItem key={list.id} list={list} onDeleted={removeList} />
         ))}
       </div>
     </div>

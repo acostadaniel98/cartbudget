@@ -36,6 +36,10 @@ interface ShoppingItemManagerProps {
   markPending: (id: string) => Promise<void>;
   reorder: (orderedIds: string[]) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
+  /** true para colaboradores con permiso de "solo ver". Sin esto, sus
+   * acciones se aplicaban de forma optimista en pantalla y luego se
+   * revertían con un error del servidor: confuso y sin explicación. */
+  readOnly?: boolean;
 }
 
 export function ShoppingItemManager({
@@ -47,6 +51,7 @@ export function ShoppingItemManager({
   markPending,
   reorder,
   removeItem,
+  readOnly = false,
 }: ShoppingItemManagerProps) {
   const { categories } = useCategories();
 
@@ -57,7 +62,11 @@ export function ShoppingItemManager({
 
   const defaultCategoryId = categories[0]?.id ?? UNCATEGORIZED_ID;
 
+  const notifyReadOnly = () =>
+    toast.info("Solo puedes ver esta compra", { description: "Pídele al propietario permiso de edición." });
+
   const handleToggle = (item: ShoppingItem) => {
+    if (readOnly) return notifyReadOnly();
     if (item.estado === ItemStatus.COMPRADO) {
       markPending(item.id);
     } else {
@@ -69,32 +78,36 @@ export function ShoppingItemManager({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-display font-bold">Productos</h2>
-        <Button size="sm" onClick={() => setIsAddOpen(true)}>
-          <Plus /> Agregar
-        </Button>
+        {!readOnly && (
+          <Button size="sm" onClick={() => setIsAddOpen(true)}>
+            <Plus /> Agregar
+          </Button>
+        )}
       </div>
 
       {items.length === 0 ? (
         <EmptyState
           icon={<ShoppingBasket />}
           title="Aún no hay productos"
-          description="Agrega el primero para empezar tu lista."
+          description={readOnly ? "El propietario todavía no agrega productos." : "Agrega el primero para empezar tu lista."}
           action={
-            <Button onClick={() => setIsAddOpen(true)}>
-              <Plus /> Agregar producto
-            </Button>
+            !readOnly && (
+              <Button onClick={() => setIsAddOpen(true)}>
+                <Plus /> Agregar producto
+              </Button>
+            )
           }
         />
       ) : (
         <ProductList
           items={items}
           categories={categories}
-          onReorderPending={reorder}
+          onReorderPending={readOnly ? () => notifyReadOnly() : reorder}
           onToggle={handleToggle}
-          onEdit={setEditingItem}
-          onDelete={setDeletingItem}
-          onMarkNotFound={(item) => markNotFound(item.id)}
-          onMarkPending={(item) => markPending(item.id)}
+          onEdit={readOnly ? notifyReadOnly : setEditingItem}
+          onDelete={readOnly ? notifyReadOnly : setDeletingItem}
+          onMarkNotFound={readOnly ? notifyReadOnly : (item) => markNotFound(item.id)}
+          onMarkPending={readOnly ? notifyReadOnly : (item) => markPending(item.id)}
         />
       )}
 

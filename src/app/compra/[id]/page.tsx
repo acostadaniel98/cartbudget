@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useParams } from "next/navigation";
-import { MoreVertical, Pencil, Copy, LayoutTemplate, Trash2, Share2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { MoreVertical, Pencil, Copy, LayoutTemplate, Trash2, Share2, Users } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,12 +29,16 @@ import { useShoppingList } from "@/features/shopping-lists/hooks/use-shopping-li
 import { EditListDialog } from "@/features/shopping-lists/components/edit-list-dialog";
 import { DuplicateListDialog } from "@/features/shopping-lists/components/duplicate-list-dialog";
 import { ShareListDialog } from "@/features/shopping-lists/components/share-list-dialog";
+import { ROUTES } from "@/constants/routes";
 
 export default function CompraDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const id = params.id;
 
-  const { list, isLoading, update, setEsPlantilla, remove, duplicate } = useShoppingList(id);
+  const { list, role, isLoading, update, setEsPlantilla, remove, duplicate } = useShoppingList(id);
+  const isOwner = role === "OWNER";
+  const canEdit = role === "OWNER" || role === "EDITOR";
   const {
     items,
     summary,
@@ -77,23 +81,32 @@ export default function CompraDetailPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setIsEditOpen(true)}>
-                <Pencil className="size-4" /> Editar
-              </DropdownMenuItem>
+              {canEdit && (
+                <DropdownMenuItem onSelect={() => setIsEditOpen(true)}>
+                  <Pencil className="size-4" /> Editar
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onSelect={() => setIsDuplicateOpen(true)}>
                 <Copy className="size-4" /> Duplicar compra
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsShareOpen(true)}>
-                <Share2 className="size-4" /> Compartir compra
+                {isOwner ? <Share2 className="size-4" /> : <Users className="size-4" />}
+                {isOwner ? "Compartir compra" : "Colaboradores"}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setEsPlantilla(!list.esPlantilla)}>
-                <LayoutTemplate className="size-4" />
-                {list.esPlantilla ? "Quitar de plantillas" : "Guardar como plantilla"}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" onSelect={() => setIsDeleteOpen(true)}>
-                <Trash2 className="size-4" /> Eliminar
-              </DropdownMenuItem>
+              {canEdit && (
+                <DropdownMenuItem onSelect={() => setEsPlantilla(!list.esPlantilla)}>
+                  <LayoutTemplate className="size-4" />
+                  {list.esPlantilla ? "Quitar de plantillas" : "Guardar como plantilla"}
+                </DropdownMenuItem>
+              )}
+              {isOwner && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onSelect={() => setIsDeleteOpen(true)}>
+                    <Trash2 className="size-4" /> Eliminar
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         }
@@ -113,6 +126,7 @@ export default function CompraDetailPage() {
           markPending={markPending}
           reorder={reorder}
           removeItem={removeItem}
+          readOnly={role === "VIEWER"}
         />
       </div>
 
@@ -128,7 +142,13 @@ export default function CompraDetailPage() {
         onConfirm={(nombre) => duplicate(nombre)}
       />
 
-      <ShareListDialog listId={id} open={isShareOpen} onOpenChange={setIsShareOpen} />
+      <ShareListDialog
+        listId={id}
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
+        role={role}
+        onLeft={() => router.replace(ROUTES.inicio)}
+      />
 
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>

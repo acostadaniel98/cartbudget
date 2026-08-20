@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Tag } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -49,11 +50,15 @@ export function NewCategoryDialog({
     if (!nombre.trim()) return;
     setIsSubmitting(true);
     try {
-      const category = await onCreate({ nombre, color });
+      const category = await onCreate({ nombre: nombre.trim(), color });
       onCreated(category);
       setNombre("");
       setColor(COLOR_SWATCHES[0]);
       onOpenChange(false);
+    } catch {
+      toast.error("No se pudo crear la categoría", {
+        description: "Puede que ya exista una con ese nombre.",
+      });
     } finally {
       setIsSubmitting(false);
     }

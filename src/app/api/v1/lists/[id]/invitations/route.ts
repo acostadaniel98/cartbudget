@@ -11,6 +11,38 @@ const invitationSchema = z.object({
   expiresInHours: z.number().int().min(1).max(24 * 7).default(72),
 }).strict();
 
+/** Solo enlaces todavía utilizables: sin aceptar, sin revocar y sin
+ * expirar. Los ya aceptados quedan reflejados en la lista de miembros, y
+ * los vencidos/revocados no tiene sentido mostrarlos para "revocar". */
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    const user = await requireUser();
+    const { id: listId } = await context.params;
+    const owner = await prisma.listMember.findFirst({
+      where: { listId, userId: user.id, role: ListMemberRole.OWNER },
+      select: { id: true },
+    });
+    if (!owner) {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Solo el propietario puede ver los enlaces de invitación" } },
+        { status: 403 },
+      );
+    }
+
+    const invitations = await prisma.listInvitation.findMany({
+      where: { listId, acceptedAt: null, revokedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, role: true, expiresAt: true, createdAt: true },
+    });
+    return NextResponse.json({ data: invitations });
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: { code: "UNAUTHORIZED", message: error.message } }, { status: 401 });
+    }
+    return NextResponse.json({ error: { code: "INTERNAL_ERROR", message: "No se pudieron cargar las invitaciones" } }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const user = await requireUser();
